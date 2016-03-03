@@ -1,0 +1,27 @@
+{
+  "name": "monix",
+  "version": "0.0.1",
+  "description": "A Node.js Tool For Emulating Web APIs, easy but powerful.(基于NodeJS的Web API模拟工具，以最简单的方式实现强大的模拟和控制能力) ",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/filow/monix.git"
+  },
+  "keywords": [
+    "nodejs",
+    "tool",
+    "emulator",
+    "web",
+    "api",
+    "webapi"
+  ],
+  "author": "Filow Lee <dev@filowlee.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/filow/monix/issues"
+  },
+  "homepage": "https://github.com/filow/monix#readme"
+}
