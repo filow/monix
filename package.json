@@ -4,7 +4,9 @@
   "description": "A Node.js Tool For Emulating Web APIs, easy but powerful.(基于NodeJS的Web API模拟工具，以最简单的方式实现强大的模拟和控制能力) ",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "build": "./node_modules/.bin/babel src -d lib",
+    "watch": "./node_modules/.bin/babel src -d lib -w"
   },
   "repository": {
     "type": "git",
@@ -23,5 +25,14 @@
   "bugs": {
     "url": "https://github.com/filow/monix/issues"
   },
-  "homepage": "https://github.com/filow/monix#readme"
+  "homepage": "https://github.com/filow/monix#readme",
+  "devDependencies": {
+    "babel-cli": "^6.6.5",
+    "babel-eslint": "^5.0.0",
+    "babel-plugin-transform-async-to-generator": "^6.5.0",
+    "babel-preset-es2015-node4": "^2.0.3",
+    "eslint": "^2.3.0",
+    "eslint-config-airbnb": "^6.0.2",
+    "eslint-plugin-react": "^4.1.0"
+  }
 }
