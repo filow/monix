@@ -1,12 +1,28 @@
 import * as u from './util';
+import pathToRegexp from 'path-to-regexp';
 class Router {
   constructor() {
     this.stack = {};
   }
+  _addRouteToStack(method, path, handler, options) {
+    const keys = [];
+    // 将字符串形式的path修改为regexp
+    const regexp = pathToRegexp(path, keys);
+    // 如果这个方法的数组还未生成，那么就生成
+    const methodUppercase = method.toUpperCase();
+    if (!this.stack[methodUppercase]) this.stack[methodUppercase] = [];
+    this.stack[methodUppercase].push({
+      regexp,
+      keys,
+      handler,
+      options,
+    });
+    u.debug('[Router.regist]', `[${methodUppercase}]`, path);
+  }
   regist(method, path, options) {
     if (u.isString(method)) {
       // 判断路径参数是否正确
-      if (u.isString(path) || u.isRegExp(path) || u.isFunction(path)) {
+      if (u.isString(path) || u.isRegExp(path)) {
         let handler;
         let opt = {};
         // 判断参数的类型，确定回调函数和参数的位置
@@ -18,23 +34,13 @@ class Router {
         } else {
           u.error('非法的路由函数调用。仅支持method(path, option, callback)与method(path, callback)两种形式');
         }
-
-        // 如果这个方法的数组还未生成，那么就生成
-        const methodUppercase = method.toUpperCase();
-        if (!this.stack[methodUppercase]) this.stack[methodUppercase] = [];
-        this.stack[methodUppercase].push({
-          path,
-          handler,
-          options: opt,
-        });
-        u.debug('[Router.regist]', `[${methodUppercase}]`, path);
+        this._addRouteToStack(method, path, handler, opt);
       } else {
-        u.error('路由应当为字符串、正则表达式或函数，不能为', path);
+        u.error('路由应当为字符串或正则表达式，不能为', path);
       }
     } else {
       u.error('method应当为一个字符串，不能为', method);
     }
-    u.debug(this.stack);
   }
 }
 

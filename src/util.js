@@ -1,6 +1,4 @@
 /* eslint-disable no-console */
-// import * as _ from 'lodash';
-// const { isString, isRegExp, isFunction, mixin, isObject } = _;
 export { isString, isRegExp, isFunction, mixin, isObject } from 'lodash';
 
 import color from 'chalk';
