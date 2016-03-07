@@ -34,5 +34,9 @@
     "eslint": "^2.3.0",
     "eslint-config-airbnb": "^6.0.2",
     "eslint-plugin-react": "^4.1.0"
+  },
+  "dependencies": {
+    "chalk": "^1.1.1",
+    "lodash": "^4.6.1"
   }
 }
