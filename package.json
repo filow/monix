@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha",
     "build": "./node_modules/.bin/babel src -d lib",
-    "watch": "./node_modules/.bin/babel src -d lib -w"
+    "watch": "./node_modules/.bin/babel src -d lib -w",
+    "serve": "./node_modules/.bin/supervisor -w ./src lib/index.js"
   },
   "repository": {
     "type": "git",
@@ -33,10 +34,12 @@
     "babel-preset-es2015-node4": "^2.0.3",
     "eslint": "^2.3.0",
     "eslint-config-airbnb": "^6.0.2",
+    "eslint-plugin-babel": "^3.1.0",
     "eslint-plugin-react": "^4.1.0"
   },
   "dependencies": {
     "chalk": "^1.1.1",
+    "koa": "^2.0.0-alpha.3",
     "lodash": "^4.6.1",
     "path-to-regexp": "^1.2.1"
   }

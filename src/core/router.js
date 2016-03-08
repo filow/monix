@@ -1,4 +1,5 @@
-import * as u from './util';
+import * as u from '../util';
+import * as url from 'url';
 import pathToRegexp from 'path-to-regexp';
 class Router {
   constructor() {
@@ -17,8 +18,9 @@ class Router {
       handler,
       options,
     });
-    u.debug('[Router.regist]', `[${methodUppercase}]`, path);
+    u.debug('Router#regist', `[${methodUppercase}]`, path);
   }
+  // 注册一个路由
   regist(method, path, options) {
     if (u.isString(method)) {
       // 判断路径参数是否正确
@@ -41,6 +43,24 @@ class Router {
     } else {
       u.error('method应当为一个字符串，不能为', method);
     }
+  }
+  middleware() {
+    const stack = this.stack;
+    return async function router(ctx, next) {
+      const parsedUrl = url.parse(ctx.url);
+      const action = u.find(stack[ctx.method],
+        (item) => item.regexp.exec(parsedUrl.pathname)
+      );
+      if (action && action.handler) {
+        action.handler.call({
+          res: ctx.Response,
+        }, ctx.Response);
+      } else {
+        // 路由未找到的处理
+        ctx.Response.notFound();
+      }
+      await next();
+    };
   }
 }
 
