@@ -1,0 +1,14 @@
+# Support ES2016 features
+parser: babel-eslint
+
+extends: airbnb
+
+plugins: [
+  "babel"
+]
+
+globals:
+  monix: true
+rules:
+  no-param-reassign: [2, {"props": false}]
+  # arrow-body-style: [2, "always"]
