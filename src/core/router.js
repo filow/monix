@@ -30,9 +30,9 @@ class Router {
         // 判断参数的类型，确定回调函数和参数的位置
         if (u.isFunction(options[0])) {
           handler = options[0];
-        } else if (u.isObject(options[0] && u.isFunction(options[1]))) {
-          handler = options[0];
-          opt = options[1];
+        } else if (u.isObject(options[0]) && u.isFunction(options[1])) {
+          opt = options[0];
+          handler = options[1];
         } else {
           u.error('非法的路由函数调用。仅支持method(path, option, callback)与method(path, callback)两种形式');
         }

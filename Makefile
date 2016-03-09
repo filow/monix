@@ -2,7 +2,7 @@ SRC = src/*.js src/core/*.js
 LIB = lib/*.js
 REQUIRED = --require should --require should-http
 
-TESTS = test/*
+TESTS = test/*.js test/route/*.js
 
 lint:
 	@./node_modules/.bin/eslint src test
