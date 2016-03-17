@@ -12,11 +12,19 @@ describe('route#error', () => {
     should(() => core.Router.regist('get', 1234, {}))
      .throw(Error);
   });
-  it('#get only accept (path, options, callback) and (path, callback)', () => {
-    should(() => api.get('/t1', {})).throw(Error);
-    should(() => api.get('/t1', {}, {})).throw(Error);
+  it('the second parameter of #get can only be object or function', () => {
+    should(() => api.get('/t1', 111)).throw(Error);
+    should(() => api.get('/t1', 'String')).throw(Error);
+    should(() => api.get('/t1', true)).throw(Error);
+  });
+  it('三参数调用时第二个参数必须是object', () => {
     const badOptionCall = function badOptionCall() {
       api.get('/t1', 111, () => {});
+    };
+    should(badOptionCall).throw(Error);
+
+    const badOptionCallString = function badOptionCallString() {
+      api.get('/t1', 'String', () => {});
     };
     should(badOptionCall).throw(Error);
   });

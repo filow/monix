@@ -6,6 +6,7 @@ class Response {
     this.message = '';
   }
   ok(msg) {
+    u.debug(msg);
     if (u.isString(msg)) {
       this.message = msg;
       this.header['Content-Type'] = 'text/html';
