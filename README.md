@@ -13,7 +13,7 @@
 
 [travis-image]: https://img.shields.io/travis/filow/monix/master.svg?style=flat-square
 [travis-url]: https://travis-ci.org/filow/monix
-[coveralls-image]: https://img.shields.io/coveralls/filow/monix/master.svg?style=flat-square
-[coveralls-url]: https://coveralls.io/r/filow/monix?branch=master
-[david-image]: https://david-dm.org/filow/monix.svg
+[coveralls-image]: https://coveralls.io/repos/github/filow/monix/badge.svg?branch=master&style=flat-square)
+[coveralls-url]: https://coveralls.io/github/filow/monix?branch=master
+[david-image]: https://david-dm.org/filow/monix.svg?style=flat-square
 [david-url]: https://david-dm.org/filow/monix.svg
