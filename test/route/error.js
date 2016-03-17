@@ -26,6 +26,6 @@ describe('route#error', () => {
     const badOptionCallString = function badOptionCallString() {
       api.get('/t1', 'String', () => {});
     };
-    should(badOptionCall).throw(Error);
+    should(badOptionCallString).throw(Error);
   });
 });
