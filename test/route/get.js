@@ -11,6 +11,10 @@ api.get('/string', res => {
   res.ok('ok');
 });
 
+api.get('/short_cut', {
+  msg: 'ok',
+});
+
 api.get('/users/:id', res => {
   res.ok({ msg: 'ok' });
 });
@@ -40,6 +44,11 @@ describe('route#get', () => {
   });
   it('(regexp) => Object', done => {
     request(core.Server.run()).get('/users/5')
+    .expect('Content-Type', /json/)
+    .expect(200, done);
+  });
+  it('(/short_cut) => Object', done => {
+    request(core.Server.run()).get('/short_cut')
     .expect('Content-Type', /json/)
     .expect(200, done);
   });
