@@ -38,3 +38,10 @@ describe('RandomUtility#linear', () => {
     linearHelper(-5, -1, -1, [-1, -2, -3, -4, -5]);
   });
 });
+
+const arr = [];
+const normalDist = Ru.normalDist(0, 1);
+for (let i = 0; i < 1000; i++) {
+  arr.push(normalDist(-10, 10));
+}
+console.log(arr);
