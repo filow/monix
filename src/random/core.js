@@ -1,54 +1,58 @@
-class RandomUtility {
-  // 产生线性分布的随机数
-  static linear(step = 1) {
-    return function _linear(_from, _to) {
-      let fromVal = _from;
-      let to = _to;
-      // 如果数值增长方向和from-to的方向相反，就调换一下
-      if ((to - fromVal) * step < 0) {
-        fromVal = _to;
-        to = _from;
-      }
-      const stepLeap = Math.floor((to - fromVal) / step);
-      const rand = Math.floor(Math.random() * (stepLeap + 1));
-      return fromVal + rand * step;
-    };
-  }
-  // 泊松分布的随机数生成函数
-  static possion() {
+import u from '../util';
+import crypto from 'crypto';
 
-  }
-  static _normal(x, miu, sigma) {
-    const a = Math.sqrt(2 * Math.PI);
-    const b = -1 * (x - miu) * (x - miu) / (2 * sigma * sigma);
-    return 1.0 / a / sigma * Math.exp(b);
-  }
-  // 正态分布
-  static normalDist(miu, sigma) {
-    return function _normalDist(min, max) {
-      let x;
-      let y;
-      let dScope;
-      do {
-        x = Math.random() * (max - min) + min;
-        y = RandomUtility._normal(x, miu, sigma);
-        dScope = Math.random() * RandomUtility._normal(miu, miu, sigma);
-      } while (dScope > y);
-      return x;
-    };
-  }
-  // 标准正态分布
-  static stdNormalDist() {
-    return RandomUtility.normalDist(0, 1);
-  }
-}
-const Ru = RandomUtility;
 class Random {
-  static number(fromVal, to, func = RandomUtility.linear()) {
-    return func(fromVal, to);
+  constructor(options = {}) {
+    const { cache = false } = options;
+    this.cache = cache;
   }
-  static bool() {
-
+  // 私有函数，获取一个对象JSON序列化后的哈希值
+  static _hash(obj) {
+    const hash = crypto.createHash('md5');
+    hash.update(JSON.stringify(obj));
+    return hash.digest('hex');
+  }
+  // 私有函数，包装原生的随机值计算函数
+  static _wrap(callback) {
+    const that = this;
+    return function paramWrapper(params) {
+      return function randomFunction() {
+        // 执行概率最大的放第一个
+        if (!that.cache) return callback.call(that, params);
+        // 根据传入的参数计算哈希值
+        const hashKey = Random._hash(params);
+        // 获取缓存中的数据，如果没有就运行callback来产生
+        let value;
+        if (this.cacheStore.exist(hashKey)) {
+          value = this.cacheStore.get(hashKey);
+        } else {
+          value = callback.call(that, params);
+          this.cacheStore.set(hashKey, value);
+        }
+        return value;
+      };
+    };
+  }
+  // 导入新的随机函数，callback的返回值必须为一个函数，该函数执行后才能获得最终的随机数
+  static add(name, callback) {
+    if (!Random.prototype[name]) {
+      Random.prototype[name] = Random._wrap(callback);
+    } else {
+      u.warn('Random#add', `${name}已被使用，注册失败`);
+    }
+  }
+  // 给一个方法起别名
+  static alias(newName, oldName) {
+    if (!Random.prototype[newName]) {
+      Random.prototype[newName] = Random.prototype[oldName];
+    } else {
+      u.warn('Random#alias', `${name}已被使用，注册失败`);
+    }
+  }
+  // 获取Random实例，用于手动获取随机数
+  static instance(options) {
+    return new Random(options);
   }
 }
-export default { R: Random, Ru };
+
+export default Random;

@@ -50,8 +50,10 @@
   },
   "dependencies": {
     "chalk": "^1.1.1",
+    "chance": "^1.0.1",
     "koa": "^2.0.0-alpha.3",
     "lodash": "^4.6.1",
-    "path-to-regexp": "^1.2.1"
+    "path-to-regexp": "^1.2.1",
+    "randexp": "^0.4.2"
   }
 }
