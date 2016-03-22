@@ -1,10 +1,15 @@
 import u from '../util';
 import crypto from 'crypto';
+import Chance from 'chance';
 
+const registedFunctions = {};
 class Random {
   constructor(options = {}) {
-    const { cache = false } = options;
+    const { cache = false, locale = 'cn' } = options;
     this.cache = cache;
+    this.locale = locale;
+    this.seed = (Math.random()).toString(16).split('.')[1];
+    this.chance = new Chance(this.seed);
   }
   // 私有函数，获取一个对象JSON序列化后的哈希值
   static _hash(obj) {
@@ -14,8 +19,8 @@ class Random {
   }
   // 私有函数，包装原生的随机值计算函数
   static _wrap(callback) {
-    const that = this;
     return function paramWrapper(params) {
+      const that = this;
       return function randomFunction() {
         // 执行概率最大的放第一个
         if (!that.cache) return callback.call(that, params);
@@ -35,8 +40,14 @@ class Random {
   }
   // 导入新的随机函数，callback的返回值必须为一个函数，该函数执行后才能获得最终的随机数
   static add(name, callback) {
-    if (!Random.prototype[name]) {
-      Random.prototype[name] = Random._wrap(callback);
+    if (!registedFunctions[name]) {
+      registedFunctions[name] = Random._wrap(callback);
+      Object.defineProperty(Random.prototype, name, {
+        get() {
+          return registedFunctions[name].bind(this);
+        },
+        enumerable: true,
+      });
     } else {
       u.warn('Random#add', `${name}已被使用，注册失败`);
     }
@@ -55,4 +66,26 @@ class Random {
   }
 }
 
+// 从chanceJS继承的原生类型
+// 某些类型因为涉及到多语言支持，所以会放到后面去
+[
+  // Basics
+  'bool', 'character', 'floating', 'integer', 'natural', 'string',
+  // Person
+  'age', 'birthday',
+  // Mobile
+  'android_id', 'apple_token',
+  // Web
+  'color', 'domain', 'email', 'ip', 'ipv6', 'url',
+  // Location
+  'altitude', 'latitude', 'longitude',
+  // Time
+  'date', 'hammertime', 'hour', 'millisecond', 'minute', 'second', 'timestamp', 'year',
+  // Miscellaneous
+  'uuid', 'hash', 'normal',
+].forEach(i => {
+  Random.add(i, function chanceFunctions(params) {
+    return this.chance[i](params);
+  });
+});
 export default Random;
