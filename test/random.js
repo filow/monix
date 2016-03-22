@@ -92,4 +92,12 @@ describe('Random#function', () => {
     linearHelper(5, 1, 1, [1, 2, 3, 4, 5]);
     linearHelper(-5, -1, -1, [-1, -2, -3, -4, -5]);
   });
+
+  it('province', () => {
+    assert.equal(typeof random.province()(), 'string');
+  });
+
+  it('city', () => {
+    assert.equal(typeof random.city()(), 'string');
+  });
 });
