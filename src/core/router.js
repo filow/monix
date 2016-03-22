@@ -1,5 +1,5 @@
-import * as u from '../util';
-import * as url from 'url';
+const u = require('../util');
+const url = require('url');
 import pathToRegexp from 'path-to-regexp';
 class Router {
   constructor() {

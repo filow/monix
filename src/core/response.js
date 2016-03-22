@@ -1,4 +1,4 @@
-import * as u from '../util';
+const u = require('../util');
 class Response {
   constructor() {
     this.status = 200;

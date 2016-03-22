@@ -1,38 +1,45 @@
-import u from '../util';
 import crypto from 'crypto';
 import Chance from 'chance';
+import Cache from './cache.js';
+const randexp = require('randexp').randexp;
+const u = require('../util');
+const mainFunc = require('./func');
 
 const registedFunctions = {};
 class Random {
   constructor(options = {}) {
-    const { cache = false, locale = 'cn' } = options;
+    const { cache = false, locale = 'cn', cacheStore } = options;
     this.cache = cache;
     this.locale = locale;
     this.seed = (Math.random()).toString(16).split('.')[1];
+    this.cacheStore = cacheStore || new Cache(this.seed);
     this.chance = new Chance(this.seed);
   }
   // 私有函数，获取一个对象JSON序列化后的哈希值
   static _hash(obj) {
-    const hash = crypto.createHash('md5');
-    hash.update(JSON.stringify(obj));
-    return hash.digest('hex');
+    if (obj) {
+      const hash = crypto.createHash('md5');
+      hash.update(JSON.stringify(obj).toString());
+      return hash.digest('hex');
+    }
+    return typeof obj;
   }
   // 私有函数，包装原生的随机值计算函数
   static _wrap(callback) {
-    return function paramWrapper(params) {
+    return function paramWrapper(...params) {
       const that = this;
       return function randomFunction() {
         // 执行概率最大的放第一个
-        if (!that.cache) return callback.call(that, params);
+        if (!that.cache) return callback.apply(that, params);
         // 根据传入的参数计算哈希值
         const hashKey = Random._hash(params);
         // 获取缓存中的数据，如果没有就运行callback来产生
         let value;
-        if (this.cacheStore.exist(hashKey)) {
-          value = this.cacheStore.get(hashKey);
+        if (that.cacheStore.exist(hashKey)) {
+          value = that.cacheStore.get(hashKey);
         } else {
-          value = callback.call(that, params);
-          this.cacheStore.set(hashKey, value);
+          value = callback.apply(that, params);
+          that.cacheStore.set(hashKey, value);
         }
         return value;
       };
@@ -49,7 +56,7 @@ class Random {
         enumerable: true,
       });
     } else {
-      u.warn('Random#add', `${name}已被使用，注册失败`);
+      u.error('Random#add', `${name}已被使用，注册失败`);
     }
   }
   // 给一个方法起别名
@@ -57,11 +64,11 @@ class Random {
     if (!Random.prototype[newName]) {
       Random.prototype[newName] = Random.prototype[oldName];
     } else {
-      u.warn('Random#alias', `${name}已被使用，注册失败`);
+      u.error('Random#alias', `${newName}已被使用，注册失败`);
     }
   }
   // 获取Random实例，用于手动获取随机数
-  static instance(options) {
+  instance(options) {
     return new Random(options);
   }
 }
@@ -88,4 +95,12 @@ class Random {
     return this.chance[i](params);
   });
 });
+
+// 支持Randexp
+Random.add('randexp', function randexpFunction(...params) {
+  return randexp.apply(this, params);
+});
+
+// 添加内部随机库
+u.each(mainFunc, (v, k) => Random.add(k, v));
 export default Random;
