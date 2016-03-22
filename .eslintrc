@@ -11,4 +11,5 @@ globals:
   monix: true
 rules:
   no-param-reassign: [2, {"props": false}]
+  one-var: [2, 'never']
   # arrow-body-style: [2, "always"]
