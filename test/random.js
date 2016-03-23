@@ -139,4 +139,36 @@ describe('Random#function', () => {
   it('zipCode', () => {
     assert(random.zipCode()().match(/[1-9]\d{5}/));
   });
+
+  it('datetime {date}', () => {
+    // 1. Javascript日期对象
+    let d = random.datetime({ date: new Date(2016, 0, 1) });
+    const utcString = '2015-12-31T16:00:00.000Z';
+    assert.equal(d(), utcString);
+    // 2，Unix偏移量（毫秒）
+    d = random.datetime({ date: 1451577600000 });
+    assert.equal(d(), utcString);
+    // 3. ISO 8601
+    d = random.datetime({ date: utcString });
+    assert.equal(d(), utcString);
+  });
+  it('datetime {year, month ...}', () => {
+    const obj = { year: 2016, month: 0, day: 1, hour: 13, minute: 45, second: 12 };
+    const operationMap = {
+      year: 'getYear', month: 'getMonth',
+      day: 'getDate', hour: 'getHours',
+      minute: 'getMinutes', second: 'getSeconds' };
+    const each = require('lodash/each');
+
+    each(obj, (v, k) => {
+      const initVal = { format: 'date' };
+      initVal[k] = v;
+      const d = random.datetime(initVal);
+      // d()取得返回的Date对象，然后通过operationMap[k]找到应该调用的取值方法
+      let testVal = d()[operationMap[k]]();
+      // getYear的返回值需要加上1900
+      if (k === 'year') testVal += 1900;
+      assert.equal(testVal, v);
+    });
+  });
 });
