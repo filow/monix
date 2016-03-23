@@ -9,10 +9,9 @@ const path = require('path');
 const registedFunctions = {};
 class Random {
   constructor(options = {}) {
-    const { cache = false, locale = 'cn', cacheStore } = options;
+    const { cache = false, seed, cacheStore } = options;
     this.cache = cache;
-    this.locale = locale;
-    this.seed = (Math.random()).toString(16).split('.')[1];
+    this.seed = seed || (Math.random()).toString(16).split('.')[1];
     this.cacheStore = cacheStore || new Cache(this.seed);
     this.chance = new Chance(this.seed);
   }
@@ -62,7 +61,7 @@ class Random {
   }
   // 懒加载模块，可以提高初始化速度
   static lazyload(pathname, name) {
-    if (registedFunctions[name]) u.error('Random#add', `${name}已被使用，注册失败`);
+    if (Random.prototype.hasOwnProperty(name)) u.error('Random#add', `${name}已被使用，注册失败`);
     Object.defineProperty(Random.prototype, name, {
       get() {
         // 已导入的话就直接返回
@@ -93,6 +92,20 @@ class Random {
   pickset(arr, count) {
     return this.chance.pickset(arr, count);
   }
+  // 添加前置0
+  pad(number, width, fillchar = '0') {
+    return this.chance.pad(number, width, fillchar);
+  }
+  // 连接多个函数的输出结果
+  concat(...items) {
+    return function concatCallback(delimiter = '') {
+      return items.map(v => {
+        // 执行函数对象
+        if (u.isFunction(v)) return v().toString();
+        return v.toString();
+      }).join(delimiter);
+    };
+  }
 }
 
 // 从chanceJS继承的原生类型
@@ -100,16 +113,16 @@ class Random {
 [
   // Basics
   'bool', 'character', 'floating', 'integer', 'natural', 'string',
+  // Text
+  'paragraph', 'sentence', 'word',
   // Person
-  'age', 'birthday',
+  'age', 'birthday', 'gender',
   // Mobile
   'android_id', 'apple_token',
   // Web
   'color', 'domain', 'email', 'ip', 'ipv6', 'url',
   // Location
   'altitude', 'latitude', 'longitude',
-  // Time
-  'date', 'hammertime', 'hour', 'millisecond', 'minute', 'second', 'timestamp', 'year',
   // Miscellaneous
   'uuid', 'hash', 'normal',
 ].forEach(i => {
