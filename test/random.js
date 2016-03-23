@@ -143,14 +143,14 @@ describe('Random#function', () => {
   it('datetime {date}', () => {
     // 1. Javascript日期对象
     let d = random.datetime({ date: new Date(2016, 0, 1) });
-    const utcString = '2015-12-31T16:00:00.000Z';
-    assert.equal(d(), utcString);
+    const isoString = (new Date(2016, 0, 1)).toISOString();
+    assert.equal(d(), isoString);
     // 2，Unix偏移量（毫秒）
     d = random.datetime({ date: 1451577600000 });
-    assert.equal(d(), utcString);
+    assert.equal(d(), isoString);
     // 3. ISO 8601
-    d = random.datetime({ date: utcString });
-    assert.equal(d(), utcString);
+    d = random.datetime({ date: isoString });
+    assert.equal(d(), isoString);
   });
   it('datetime {year, month ...}', () => {
     const obj = { year: 2016, month: 0, day: 1, hour: 13, minute: 45, second: 12 };
