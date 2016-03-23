@@ -9,9 +9,9 @@ const path = require('path');
 const registedFunctions = {};
 class Random {
   constructor(options = {}) {
-    const { cache = false, cacheStore } = options;
+    const { cache = false, seed, cacheStore } = options;
     this.cache = cache;
-    this.seed = (Math.random()).toString(16).split('.')[1];
+    this.seed = seed || (Math.random()).toString(16).split('.')[1];
     this.cacheStore = cacheStore || new Cache(this.seed);
     this.chance = new Chance(this.seed);
   }
@@ -113,16 +113,16 @@ class Random {
 [
   // Basics
   'bool', 'character', 'floating', 'integer', 'natural', 'string',
+  // Text
+  'paragraph', 'sentence', 'word',
   // Person
-  'age', 'birthday',
+  'age', 'birthday', 'gender',
   // Mobile
   'android_id', 'apple_token',
   // Web
   'color', 'domain', 'email', 'ip', 'ipv6', 'url',
   // Location
   'altitude', 'latitude', 'longitude',
-  // Time
-  'date', 'hammertime', 'hour', 'millisecond', 'minute', 'second', 'timestamp', 'year',
   // Miscellaneous
   'uuid', 'hash', 'normal',
 ].forEach(i => {
