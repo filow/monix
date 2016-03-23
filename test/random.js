@@ -172,4 +172,22 @@ describe('Random#function', () => {
       assert.equal(testVal, v);
     });
   });
+  it('datetime 无参数调用', () => {
+    const d = random.datetime();
+    assert(d().match(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/));
+  });
+
+  it('datetime {format}', () => {
+    // 字符串format
+    let d = random.datetime({ format: 'YYYY-MM-DD' });
+    assert(d().match(/\d{4}-\d{2}-\d{2}/));
+    d = random.datetime({ format: 'array' });
+    assert.equal(d().length, 7);
+    d = random.datetime({ format: 'date' });
+    assert.equal(typeof d(), 'object');
+    d = random.datetime({ format: 'unix' });
+    assert(d().toString().match(/\d+/));
+    d = random.datetime({ format: 'milliseconds' });
+    assert(d().toString().match(/\d+/));
+  });
 });
