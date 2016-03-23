@@ -6,8 +6,10 @@ const random = new Random();
 
 describe('Random#static', () => {
   it('_hash', () => {
-    const hash = Random._hash({ id: 1 });
+    let hash = Random._hash({ id: 1 });
     assert.equal(hash, 'd2ce28b9a7fd7e4407e2b0fd499b7fe4');
+    hash = Random._hash();
+    assert.equal(hash, 'undefined');
   });
   it('_wrap', () => {
     const func = Random._wrap(() => 'test');
