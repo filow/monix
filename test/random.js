@@ -105,6 +105,9 @@ describe('Random#function', () => {
     // from和to方向错误纠正
     linearHelper(5, 1, 1, [1, 2, 3, 4, 5]);
     linearHelper(-5, -1, -1, [-1, -2, -3, -4, -5]);
+    // 没有step的测试
+    const nostep = random.linear({ min: 1, max: 2 });
+    assertInNumberArray(nostep(), [1, 2]);
   });
 
   it('province', () => {
