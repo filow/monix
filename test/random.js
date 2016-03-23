@@ -127,4 +127,8 @@ describe('Random#function', () => {
   it('county', () => {
     assert.equal(typeof random.county()(), 'string');
   });
+
+  it('zipCode', () => {
+    assert(random.zipCode()().match(/[1-9]\d{5}/));
+  });
 });
