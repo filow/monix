@@ -92,6 +92,10 @@ class Random {
   pickset(arr, count) {
     return this.chance.pickset(arr, count);
   }
+  // 添加前置0
+  pad(number, width, fillchar = '0') {
+    return this.chance.pad(number, width, fillchar);
+  }
 }
 
 // 从chanceJS继承的原生类型

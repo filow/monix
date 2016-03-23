@@ -64,6 +64,12 @@ describe('Random#helper', () => {
     const dataSet = random.pickset(arr, 2);
     dataSet.forEach((v) => assert(arr.indexOf(v) >= 0));
   });
+  it('pad', () => {
+    let text = random.pad('12', 5);
+    assert.equal(text, '00012');
+    text = random.pad('12', 5, 'Z');
+    assert.equal(text, 'ZZZ12');
+  });
 });
 
 describe('Random#vendor', () => {
