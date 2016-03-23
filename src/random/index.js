@@ -96,6 +96,16 @@ class Random {
   pad(number, width, fillchar = '0') {
     return this.chance.pad(number, width, fillchar);
   }
+  // 连接多个函数的输出结果
+  concat(...items) {
+    return function concatCallback(delimiter = '') {
+      return items.map(v => {
+        // 执行函数对象
+        if (u.isFunction(v)) return v().toString();
+        return v.toString();
+      }).join(delimiter);
+    };
+  }
 }
 
 // 从chanceJS继承的原生类型

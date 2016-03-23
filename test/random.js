@@ -70,6 +70,11 @@ describe('Random#helper', () => {
     text = random.pad('12', 5, 'Z');
     assert.equal(text, 'ZZZ12');
   });
+  it('concat', () => {
+    const concat = random.concat(1, 'h', () => 'e');
+    assert.equal(concat(), '1he');
+    assert.equal(concat(','), '1,h,e');
+  });
 });
 
 describe('Random#vendor', () => {
@@ -126,6 +131,9 @@ describe('Random#function', () => {
 
   it('county', () => {
     assert.equal(typeof random.county()(), 'string');
+  });
+  it('address', () => {
+    assert.equal(typeof random.address()(), 'string');
   });
 
   it('zipCode', () => {
