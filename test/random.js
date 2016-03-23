@@ -55,7 +55,15 @@ describe('Random#config', () => {
 });
 
 describe('Random#helper', () => {
-
+  const arr = [1, 2, 3, 4];
+  it('pickone', () => {
+    const one = random.pickone(arr);
+    assert(arr.indexOf(one) >= 0);
+  });
+  it('pickset', () => {
+    const dataSet = random.pickset(arr, 2);
+    dataSet.forEach((v) => assert(arr.indexOf(v) >= 0));
+  });
 });
 
 describe('Random#vendor', () => {
