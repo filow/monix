@@ -9,9 +9,8 @@ const path = require('path');
 const registedFunctions = {};
 class Random {
   constructor(options = {}) {
-    const { cache = false, locale = 'cn', cacheStore } = options;
+    const { cache = false, cacheStore } = options;
     this.cache = cache;
-    this.locale = locale;
     this.seed = (Math.random()).toString(16).split('.')[1];
     this.cacheStore = cacheStore || new Cache(this.seed);
     this.chance = new Chance(this.seed);
