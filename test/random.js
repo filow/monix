@@ -142,11 +142,12 @@ describe('Random#function', () => {
 
   it('datetime {date}', () => {
     // 1. Javascript日期对象
-    let d = random.datetime({ date: new Date(2016, 0, 1) });
-    const isoString = (new Date(2016, 0, 1)).toISOString();
+    const dateObj = new Date(2016, 0, 1);
+    let d = random.datetime({ date: dateObj });
+    const isoString = dateObj.toISOString();
     assert.equal(d(), isoString);
     // 2，Unix偏移量（毫秒）
-    d = random.datetime({ date: 1451577600000 });
+    d = random.datetime({ date: dateObj.valueOf() });
     assert.equal(d(), isoString);
     // 3. ISO 8601
     d = random.datetime({ date: isoString });
