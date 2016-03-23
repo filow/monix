@@ -29,6 +29,10 @@ describe('Random#static', () => {
     Random.add('testAlias2', () => 'alias!');
     assert.throws(() => Random.alias('testA2', 'testAlias2'), /已被使用/);
   });
+  it('lazyload', () => {
+    // 试图重复引入
+    assert.throws(() => Random.lazyload('fakepath', 'city'), /已被使用/);
+  });
 });
 
 describe('Random#config', () => {
