@@ -100,4 +100,8 @@ describe('Random#function', () => {
   it('city', () => {
     assert.equal(typeof random.city()(), 'string');
   });
+
+  it('county', () => {
+    assert.equal(typeof random.county()(), 'string');
+  });
 });
