@@ -3,7 +3,8 @@ import Chance from 'chance';
 import Cache from './cache.js';
 const randexp = require('randexp').randexp;
 const u = require('../util');
-const mainFunc = require('./func');
+const fs = require('fs');
+const path = require('path');
 
 const registedFunctions = {};
 class Random {
@@ -59,6 +60,20 @@ class Random {
       u.error('Random#add', `${name}已被使用，注册失败`);
     }
   }
+  // 懒加载模块，可以提高初始化速度
+  static lazyload(pathname, name) {
+    if (registedFunctions[name]) u.error('Random#add', `${name}已被使用，注册失败`);
+    Object.defineProperty(Random.prototype, name, {
+      get() {
+        // 已导入的话就直接返回
+        if (registedFunctions[name]) return registedFunctions[name].bind(this);
+        const callback = require(pathname)[name];
+        registedFunctions[name] = Random._wrap(callback);
+        return registedFunctions[name].bind(this);
+      },
+      enumerable: true,
+    });
+  }
   // 给一个方法起别名
   static alias(newName, oldName) {
     if (!Random.prototype[newName]) {
@@ -108,6 +123,10 @@ Random.add('randexp', function randexpFunction(...params) {
   return randexp.apply(this, params);
 });
 
-// 添加内部随机库
-u.each(mainFunc, (v, k) => Random.add(k, v));
+// 添加内部函数库，采用懒加载方式
+fs.readdirSync(path.resolve(__dirname, './functions')).forEach((v) => {
+  const name = v.match(/(\w+)\.js/)[1];
+  Random.lazyload(`./functions/${v}`, name);
+});
+// u.each(mainFunc, (v, k) => Random.add(k, v));
 export default Random;
