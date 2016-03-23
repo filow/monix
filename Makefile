@@ -1,4 +1,4 @@
-SRC = src/*.js src/core/*.js
+SRC = src/*.js src/core/*.js src/random/**/*.js 
 LIB = lib/*.js
 REQUIRED = --require should --require should-http
 
