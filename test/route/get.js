@@ -32,44 +32,45 @@ api.get('/options', {}, res => {
 });
 
 describe('route#get', () => {
+  const server = core.Server.run();
   it('(/) => Object', done => {
-    request(core.Server.run()).get('/')
+    request(server).get('/')
     .expect('Content-Type', /json/)
     .expect(200, done);
   });
   it('(string) => Object', done => {
-    request(core.Server.run()).get('/users/5')
+    request(server).get('/users/5')
     .expect('Content-Type', /json/)
     .expect(200, done);
   });
   it('(regexp) => Object', done => {
-    request(core.Server.run()).get('/users/5')
+    request(server).get('/users/5')
     .expect('Content-Type', /json/)
     .expect(200, done);
   });
   it('(/short_cut) => Object', done => {
-    request(core.Server.run()).get('/short_cut')
+    request(server).get('/short_cut')
     .expect('Content-Type', /json/)
     .expect(200, done);
   });
   it('(/options, {}) => Object', done => {
-    request(core.Server.run()).get('/options')
+    request(server).get('/options')
     .expect('Content-Type', /json/)
     .expect(200, done);
   });
 
   it('(/string) => String', done => {
-    request(core.Server.run()).get('/string')
+    request(server).get('/string')
     .expect('Content-Type', /html/)
     .expect(200, done);
   });
 
   it('(/) => Other', done => {
-    request(core.Server.run()).get('/number')
+    request(server).get('/number')
     .expect('Content-Type', /plain/)
     .expect(200, done);
   });
   it('(/) => 404', done => {
-    request(core.Server.run()).get('/some').expect(404, done);
+    request(server).get('/some').expect(404, done);
   });
 });
