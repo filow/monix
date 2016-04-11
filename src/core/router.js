@@ -1,6 +1,7 @@
 const u = require('../util');
 const url = require('url');
 import pathToRegexp from 'path-to-regexp';
+import Random from '../random';
 class Router {
   constructor() {
     this.stack = {};
@@ -55,9 +56,11 @@ class Router {
         (item) => item.regexp.exec(parsedUrl.pathname)
       );
       if (action && action.handler) {
+        const random = new Random();
         action.handler.call({
           res: ctx.Response,
-        }, ctx.Response);
+          rnd: random,
+        }, ctx.Response, random);
       } else {
         // 路由未找到的处理
         ctx.Response.notFound();

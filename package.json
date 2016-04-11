@@ -7,7 +7,7 @@
     "test": "make test",
     "build": "./node_modules/.bin/babel src -d lib",
     "watch": "./node_modules/.bin/babel src -d lib -w",
-    "serve": "./node_modules/.bin/supervisor -w ./src lib/index.js"
+    "serve": "./node_modules/.bin/supervisor -w ./lib,./test/cli -x ./bin/monix.js test/cli/test.js"
   },
   "repository": {
     "type": "git",

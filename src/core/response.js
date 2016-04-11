@@ -1,4 +1,14 @@
 const u = require('../util');
+function recursiveEvaluate(obj) {
+  if (u.isFunction(obj)) {
+    return obj();
+  } else if (u.isArray(obj)) {
+    return u.map(obj, e => recursiveEvaluate(e));
+  } else if (u.isPlainObject(obj)) {
+    return u.mapValues(obj, e => recursiveEvaluate(e));
+  }
+  return obj;
+}
 class Response {
   constructor() {
     this.status = 200;
@@ -6,25 +16,25 @@ class Response {
     this.message = '';
   }
   ok(msg) {
-    u.debug(msg);
-    if (u.isString(msg)) {
-      this.message = msg;
-      this.header['Content-Type'] = 'text/html';
-    } else if (u.isObject(msg)) {
-      this.message = JSON.stringify(msg);
-      this.header['Content-Type'] = 'application/json';
-    } else {
-      this.message = msg.toString();
-      this.header['Content-Type'] = 'text/plain';
-    }
+    this.status = 200;
+    this.message = msg;
   }
   notFound() {
     this.status = 404;
-    this.header['Content-Type'] = 'application/json';
-    this.message = JSON.stringify({
+    this.message = {
       error: 404,
       msg: 'Page Not Found',
-    });
+    };
+  }
+  _render() {
+    const msg = recursiveEvaluate(this.message);
+    if (u.isString(msg)) {
+      this.message = msg;
+      this.header['Content-Type'] = 'text/html';
+    } else {
+      this.message = msg;
+      this.header['Content-Type'] = 'application/json';
+    }
   }
 }
 
@@ -34,6 +44,7 @@ class ResponseHandler {
       const that = new Response();
       ctx.Response = that;
       await next();
+      that._render();
       ctx.status = that.status;
       ctx.body = that.message;
       ctx.set(that.header);

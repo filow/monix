@@ -1,6 +1,17 @@
 /* eslint-disable no-undef */
-get('/', res => {
-  res.ok({ msg: 'ok' });
+get('/', (res, rnd) => {
+  res.ok({
+    msg: 'ok',
+    id: rnd.integer({ min: 1, max: 100 }),
+    complex: {
+      array: [rnd.bool(), rnd.randexp(/[01]{5}/)],
+      string: 'sample',
+      number: 121,
+      userFunction() {
+        return Math.random();
+      },
+    },
+  });
 });
 
 get('/string', res => {

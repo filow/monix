@@ -67,7 +67,7 @@ describe('route#get', () => {
 
   it('(/) => Other', done => {
     request(server).get('/number')
-    .expect('Content-Type', /plain/)
+    .expect('Content-Type', /json/)
     .expect(200, done);
   });
   it('(/) => 404', done => {
