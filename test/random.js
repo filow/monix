@@ -180,7 +180,7 @@ describe('Random#function', () => {
   it('datetime {format}', () => {
     // 字符串format
     let d = random.datetime({ format: 'YYYY-MM-DD' });
-    assert(d().match(/\d{4}-\d{2}-\d{2}/));
+    assert(d().match(/\d{4}-\d{1,2}-\d{1,2}/));
     d = random.datetime({ format: 'array' });
     assert.equal(d().length, 7);
     d = random.datetime({ format: 'date' });
