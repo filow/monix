@@ -14,6 +14,10 @@ get('/', (res, rnd) => {
   });
 });
 
+get('/random', (res, r) => {
+  res.ok(r.randexp(/s{3}/));
+});
+
 get('/string', res => {
   res.ok('ok');
 });

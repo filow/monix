@@ -43,8 +43,9 @@ describe('route#complex', () => {
 
   it('random', done => {
     request(server).get('/random')
-    .expect('sss', done);
+    .expect(200, '"sss"', done);
   });
+
   it('nested', done => {
     request(server).get('/nested')
     .expect({

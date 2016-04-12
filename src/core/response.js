@@ -12,7 +12,9 @@ function recursiveEvaluate(obj) {
 class Response {
   constructor() {
     this.status = 200;
-    this.header = {};
+    this.header = {
+      'Content-Type': 'application/json',
+    };
     this.message = '';
   }
   ok(msg) {
@@ -28,13 +30,7 @@ class Response {
   }
   _render() {
     const msg = recursiveEvaluate(this.message);
-    if (u.isString(msg)) {
-      this.message = msg;
-      this.header['Content-Type'] = 'text/html';
-    } else {
-      this.message = msg;
-      this.header['Content-Type'] = 'application/json';
-    }
+    this.message = JSON.stringify(msg);
   }
 }
 
