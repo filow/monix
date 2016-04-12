@@ -10,6 +10,7 @@ const formatPreset = {
   toNow: 'toNow', // 距离现在还有多久
   fromNow: 'formNow', // 多久之前,
 };
+const monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 export function datetime(params = {}) {
   // date字段支持：
   // 1. Javascript日期对象
@@ -23,12 +24,12 @@ export function datetime(params = {}) {
   } else {
     const {
       year = this.natural({ min: 1990, max: (new Date()).getYear() + 1900 }),
-      month = this.natural({ min: 0, max: 11 }),
-      day = this.natural({ min: 1, max: 31 }),
+      month = this.natural({ min: 0, max: 11 })(),
       hour = this.natural({ min: 0, max: 23 }),
       minute = this.natural({ min: 0, max: 59 }),
       second = this.natural({ min: 0, max: 59 }),
     } = params;
+    const { day = this.natural({ min: 1, max: monthDays[month] }) } = params;
     let obj = { year, month, day, hour, minute, second };
     // 将函数类型转化为普通类型
     obj = u.map(obj, v => {
