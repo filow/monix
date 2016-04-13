@@ -42,6 +42,17 @@ export default {
     }
     cwd[key] = value;
   },
+  scope(scope = '/') {
+    const that = this;
+    return {
+      get: function scopeGet(key) {
+        return that.get(scope, key);
+      },
+      set: function scopeSet(key, value) {
+        return that.set(scope, key, value);
+      },
+    };
+  },
   regist(namespace, descriptor) {
     const prefix = namespace === '/' ? '' : `${namespace}/`;
     // if (namespace[namespace.length - 1] === '/') {

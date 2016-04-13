@@ -57,4 +57,12 @@ describe('Config', () => {
     assert.equal(2, Config.get('/foo/bar', 'number')); // /foo/bar没有这个值，所以就使用了上层的/foo
     assert.equal(9, Config.get('/foo/bar/baz', 'number'));
   });
+
+  it('scope', () => {
+    Config.set('/', 'str', 'foo');
+    const scope = Config.scope('/foo');
+    assert.equal('foo', scope.get('str'));
+    scope.set('str', '111');
+    assert.equal('111', scope.get('str'));
+  });
 });
