@@ -61,6 +61,8 @@ describe('Config', () => {
   it('scope', () => {
     Config.set('/', 'str', 'foo');
     const scope = Config.scope('/foo');
+    const rootScope = Config.scope();
+    assert.equal('foo', rootScope.get('str'));
     assert.equal('foo', scope.get('str'));
     scope.set('str', '111');
     assert.equal('111', scope.get('str'));
