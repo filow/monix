@@ -2,11 +2,17 @@ const u = require('../util');
 const url = require('url');
 import pathToRegexp from 'path-to-regexp';
 import Random from '../random';
+import Config from '../config';
+function generateRouteName(method, path) {
+  const pathUnderscore = path.toString().replace(/[^\w]+/g, '_');
+  // 可能会因为path第一个字符是非字母字符而导致出现连续的两个_
+  return `${method.toLowerCase()}_${pathUnderscore}`.replace(/[_]+/g, '_');
+}
 class Router {
   constructor() {
     this.stack = {};
   }
-  _addRouteToStack(method, path, handler, options) {
+  _addRouteToStack(name, method, path, handler) {
     const keys = [];
     // 将字符串形式的path修改为regexp
     const regexp = pathToRegexp(path, keys);
@@ -14,10 +20,10 @@ class Router {
     const methodUppercase = method.toUpperCase();
     if (!this.stack[methodUppercase]) this.stack[methodUppercase] = [];
     this.stack[methodUppercase].push({
+      name,
       regexp,
       keys,
       handler,
-      options,
     });
     u.debug('Router#regist', `[${methodUppercase}]`, path);
   }
@@ -28,6 +34,7 @@ class Router {
     if (!u.isString(path) && !u.isRegExp(path)) u.error('路由应当为字符串或正则表达式，不能为', path);
 
     let handler;
+    let name = generateRouteName(method, path);
     let opt = {};
     // 判断参数的类型，确定回调函数和参数的位置
     if (u.isObject(options[0]) && !u.isFunction(options[0])) {
@@ -35,6 +42,14 @@ class Router {
       if (u.isFunction(options[1])) {
         opt = options[0];
         handler = options[1];
+        if (opt.name) {
+          name = opt.name;
+          delete opt.name;
+        }
+        const scope = Config.scope(name);
+        u.each(opt, (v, k) => {
+          scope.set(k, v);
+        });
       } else {
         // (path, data)
         // 将直接返回数据包装成函数，保证数据类型一致
@@ -46,7 +61,7 @@ class Router {
     } else {
       u.error('非法的路由函数调用。仅支持(path, option, callback), (path, callback)和(path, data)');
     }
-    this._addRouteToStack(method, path, handler, opt);
+    this._addRouteToStack(name, method, path, handler);
   }
   middleware() {
     const stack = this.stack;
@@ -60,6 +75,7 @@ class Router {
         action.handler.call({
           res: ctx.Response,
           rnd: random,
+          config: Config.scope(`${action.name}`),
         }, ctx.Response, random);
       } else {
         // 路由未找到的处理

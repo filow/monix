@@ -43,14 +43,12 @@ export default {
     cwd[key] = value;
   },
   scope(scope = '/') {
-    const that = this;
+    const scopeGet = (key) => this.get(scope, key);
+    const scopeSet = (key, value) => this.set(scope, key, value);
     return {
-      get: function scopeGet(key) {
-        return that.get(scope, key);
-      },
-      set: function scopeSet(key, value) {
-        return that.set(scope, key, value);
-      },
+      scope,
+      get: scopeGet,
+      set: scopeSet,
     };
   },
   regist(namespace, descriptor) {

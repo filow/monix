@@ -1,5 +1,5 @@
 const assert = require('assert');
-const Config = require('../lib/config').default;
+const Config = require('../../lib/config').default;
 Config.regist('/', {
   number: {
     default: 1,

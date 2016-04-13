@@ -1,8 +1,8 @@
-SRC = src/*.js src/core/*.js src/random/**/*.js 
+SRC = src/*.js src/core/*.js src/random/**/*.js
 LIB = lib/*.js
 REQUIRED = --require should --require should-http
 
-TESTS = test/*.js test/route/*.js
+TESTS = test/*.js test/route/*.js test/config/*.js
 
 lint:
 	@./node_modules/.bin/eslint src test
