@@ -12,4 +12,5 @@ globals:
 rules:
   no-param-reassign: [2, {"props": false}]
   one-var: [2, 'never']
+  react/prefer-stateless-function: 'off'
   # arrow-body-style: [2, "always"]
