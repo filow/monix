@@ -42,6 +42,8 @@ describe('Config', () => {
 
   it('不存在的值', () => {
     assert(typeof Config.get('/', 'foo') === 'undefined');
+    Config.set('/', 'notExisted', '111');
+    assert(typeof Config.get('/', 'notExisted') === 'undefined');
   });
 
   it('层叠覆盖测试', () => {

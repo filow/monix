@@ -16,16 +16,11 @@ Config.regist('test', {
 
 api.get('/config', {
   'test/foo': '123',
-  'test/bar': {
-    baz: 456,
-  },
 }, function (res) {
   const foo = this.config.get('test/foo');
-  const bar = this.config.get('test/bar');
   const hello = this.config.get('test/hello');
   res.ok({
     foo,
-    bar,
     hello,
   });
 });
@@ -36,14 +31,13 @@ api.get('/name', {
   res.ok(this.config.get('name'));
 });
 
-describe('route#complex', () => {
+describe('Config#route#complex', () => {
   const server = core.Server.run();
 
   it('路由设置测试', done => {
     request(server).get('/config')
     .expect({
       foo: '123',
-      // 没有bar因为这个值没有注册过
       hello: 'world',
     }, done);
   });

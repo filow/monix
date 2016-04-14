@@ -7,6 +7,10 @@ class Server {
     Config.regist('/', {
       protocol: {
         default: 'http',
+        validators: [
+          Config.v.type('string'),
+          Config.v.inArray(['http']),
+        ],
       },
       host: {
         default: 'localhost',
