@@ -2,7 +2,7 @@ SRC = src/*.js src/core/*.js src/random/**/*.js
 LIB = lib/*.js
 REQUIRED = --require should --require should-http
 
-TESTS = test/*.js test/route/*.js test/config/*.js
+TESTS = test/random.js test/util.js test/route test/config
 
 lint:
 	@./node_modules/.bin/eslint src test
@@ -11,7 +11,7 @@ test:
 	@NODE_ENV=test node \
 		./node_modules/.bin/_mocha \
 		$(REQUIRED) \
-		$(TESTS) \
+		$(TESTS) --recursive\
 		--bail
 
 test-cov:
@@ -20,7 +20,7 @@ test-cov:
 		./node_modules/.bin/_mocha \
 		-- -u exports \
 		$(REQUIRED) \
-		$(TESTS) \
+		$(TESTS)  --recursive\
 		--bail
 
 test-travis: lint
@@ -30,5 +30,5 @@ test-travis: lint
 		--report lcovonly \
 		-- -u exports \
 		$(REQUIRED) \
-		$(TESTS) \
+		$(TESTS)  --recursive\
 		--bail

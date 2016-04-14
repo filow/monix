@@ -1,12 +1,20 @@
 import Koa from 'koa';
 import * as u from './util';
 import Config from './config';
+const supportedProtocol = ['http'];
 class Server {
   constructor() {
     this.koa = new Koa();
     Config.regist('/', {
       protocol: {
         default: 'http',
+        onSet(newVal) {
+          if (supportedProtocol.indexOf(newVal) >= 0) {
+            return newVal;
+          }
+          u.warn(`protocol不能被设置为${newVal}，可选的取值有：`, supportedProtocol);
+          return undefined;
+        },
       },
       host: {
         default: 'localhost',
