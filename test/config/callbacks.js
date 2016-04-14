@@ -17,6 +17,14 @@ Config.regist('test', {
       return '_' + val;
     },
   },
+  objectType: {
+    default: new Date(111),
+    validators: [Config.v.objectType('date')],
+  },
+  regexp: {
+    default: '__word__',
+    validators: [Config.v.regexp(/__\w+__/)],
+  },
 });
 describe('Config回调', () => {
   const scope = Config.scope('/');
@@ -34,5 +42,23 @@ describe('Config回调', () => {
     assert.equal('_foo', scope.get('test/str'));
     scope.set('test/str', 'bar');
     assert.equal('_bar', scope.get('test/str'));
+  });
+
+  it('objectType', () => {
+    assert.equal(111, Number(scope.get('test/objectType')));
+    scope.set('test/objectType', 222);
+    assert.equal(111, Number(scope.get('test/objectType')));
+    scope.set('test/objectType', new Date(222));
+    assert.equal(222, Number(scope.get('test/objectType')));
+  });
+
+  it('regexp', () => {
+    assert.equal('__word__', scope.get('test/regexp'));
+    scope.set('test/regexp', 'hello');
+    assert.equal('__word__', scope.get('test/regexp'));
+    scope.set('test/regexp', '_hello2_');
+    assert.equal('__word__', scope.get('test/regexp'));
+    scope.set('test/regexp', '__hello3__');
+    assert.equal('__hello3__', scope.get('test/regexp'));
   });
 });

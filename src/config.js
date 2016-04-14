@@ -4,7 +4,26 @@ const callbacks = {};
 function pathPrefix(item) {
   return `__${item}`;
 }
+class Validator {
+  static type(req) {
+    return (value) => typeof value === req;
+  }
+  static objectType(req) {
+    return value => {
+      const objectType = Object.prototype.toString.call(value);
+      const type = objectType.match(/\[\w+ (\w+)\]/)[1].toLowerCase();
+      return type === req;
+    };
+  }
+  static regexp(req) {
+    return value => value.toString().match(req);
+  }
+  static inArray(req) {
+    return value => req.indexOf(value) >= 0;
+  }
+}
 export default {
+  v: Validator,
   get(scope, key) {
     const path = scope.split('/');
     let cwd = dataTrain;
@@ -50,21 +69,22 @@ export default {
         cwd = cwd[prefixedItem];
       }
     }
-    // 下面开始执行回调
-    const func = callbacks[key].onSet;
-    // 每个回调都有可能改变最后赋予的值
-    let filteredValue = value;
+    // 下面开始运行验证器
+    const func = callbacks[key].validators || [];
     // 识别是否在某个回调函数中断了
-    let breaked = false;
-    for (let i = 0; i < func.length; i++) {
-      filteredValue = func[i](filteredValue, cwd[key], scope);
-      if (typeof filteredValue === 'undefined') {
-        breaked = true;
-        break;
-      }
+    let i;
+    for (i = 0; i < func.length; i++) {
+      if (!func[i](value, cwd[key], scope)) break;
     }
-    // 只要所有回调都执行下来了，那就返回最后的值
-    if (!breaked) cwd[key] = filteredValue;
+    if (i < func.length) {
+      u.warn(`向${key}赋值失败，原因是没有通过数据验证器：${func[i].toString()}`);
+    } else {
+      let finalVal = value;
+      if (callbacks[key].onSet && u.isFunction(callbacks[key].onSet)) {
+        finalVal = callbacks[key].onSet(value, cwd[key], scope);
+      }
+      if (typeof finalVal !== 'undefined') cwd[key] = finalVal;
+    }
   },
   scope(scope = '/') {
     const scopeGet = (key) => this.get(scope, key);
@@ -81,15 +101,11 @@ export default {
       const fullName = prefix + key;
       dataTrain[fullName] = item.default;
       // 初始化回调对象
-      callbacks[fullName] = { onSet: [] };
-      // 如果设置了回调，那么就往回调数组里添加一条。
-      // onSet回调必须是最后一个加入数组的内容，因为validators属性也会影响这个数组，要保证onSet回调是最后一个执行的
-      if (item.onSet) {
-        callbacks[fullName].onSet.push(item.onSet);
-      }
-      if (item.onGet) {
-        callbacks[fullName].onGet = item.onGet;
-      }
+      callbacks[fullName] = {
+        onSet: item.onSet,
+        validators: item.validators,
+        onGet: item.onGet,
+      };
     });
   },
 };

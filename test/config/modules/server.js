@@ -10,5 +10,7 @@ describe('Server#config', () => {
     assert.equal('http', scope.get('protocol'));
     api.set('protocol', 'http');
     assert.equal('http', scope.get('protocol'));
+    api.set('protocol', 123456);
+    assert.equal('http', scope.get('protocol'));
   });
 });
