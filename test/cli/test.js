@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+set('host', '0.0.0.0');
 get('/', (res, rnd) => {
   res.ok({
     msg: 'ok',

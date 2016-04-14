@@ -5,7 +5,7 @@ import Config from './config';
 // User-Level API
 const api = {
   R: new Random(),
-  set: Config.scope('/'),
+  set: Config.scope('/').set,
   get: function get(path, ...other) {
     Router.regist('get', path, other);
   },

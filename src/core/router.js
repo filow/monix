@@ -11,6 +11,11 @@ function generateRouteName(method, path) {
 class Router {
   constructor() {
     this.stack = {};
+    Config.regist('/', {
+      name: {
+        default: 'global',
+      },
+    });
   }
   _addRouteToStack(name, method, path, handler) {
     const keys = [];
@@ -25,7 +30,7 @@ class Router {
       keys,
       handler,
     });
-    u.debug('Router#regist', `[${methodUppercase}]`, path);
+    u.debug('Router#regist', `[${methodUppercase}]`, path, '\tname:', name);
   }
   // 注册一个路由
   regist(method, path, options) {
@@ -44,12 +49,12 @@ class Router {
         handler = options[1];
         if (opt.name) {
           name = opt.name;
-          delete opt.name;
         }
         const scope = Config.scope(name);
         u.each(opt, (v, k) => {
           scope.set(k, v);
         });
+        scope.set('name', name);
       } else {
         // (path, data)
         // 将直接返回数据包装成函数，保证数据类型一致

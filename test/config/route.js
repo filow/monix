@@ -30,6 +30,12 @@ api.get('/config', {
   });
 });
 
+api.get('/name', {
+  name: 'name_route',
+}, function (res) {
+  res.ok(this.config.get('name'));
+});
+
 describe('route#complex', () => {
   const server = core.Server.run();
 
@@ -40,5 +46,10 @@ describe('route#complex', () => {
       // 没有bar因为这个值没有注册过
       hello: 'world',
     }, done);
+  });
+
+  it('具名路由', done => {
+    request(server).get('/name')
+    .expect('"name_route"', done);
   });
 });

@@ -21,6 +21,7 @@ class Server {
   }
   run() {
     let instance;
+    /* istanbul ignore else */
     if (u.isTest()) {
       instance = this.koa.listen();
     } else {
