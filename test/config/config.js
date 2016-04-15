@@ -1,15 +1,10 @@
 const assert = require('assert');
 const Config = require('../../lib/config').default;
 Config.regist('/', {
-  number: {
-    default: 1,
-  },
-  str: {
-    default: 'foo',
-  },
-  array: {
-    default: [],
-  },
+  number: 1,
+  str: 'foo',
+  array: [],
+  // 对象形式的内容只能通过传入带default对象的方式赋值
   obj: {
     default: {
       foo: 1,
@@ -17,15 +12,9 @@ Config.regist('/', {
   },
 });
 Config.regist('namespace', {
-  number: {
-    default: 1,
-  },
-  batch1: {
-    default: 3,
-  },
-  batch2: {
-    default: 'foo',
-  },
+  number: 1,
+  batch1: 3,
+  batch2: 'foo',
 });
 describe('Config', () => {
   it('number', () => {

@@ -6,12 +6,8 @@ const api = monix.default.api;
 const core = monix.default.monix;
 const Config = require('../../lib/config').default;
 Config.regist('test', {
-  foo: {
-    default: 'default',
-  },
-  hello: {
-    default: 'world',
-  },
+  foo: 'default',
+  hello: 'world',
 });
 
 api.get('/config', {
