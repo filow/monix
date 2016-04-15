@@ -20,6 +20,12 @@ Config.regist('namespace', {
   number: {
     default: 1,
   },
+  batch1: {
+    default: 3,
+  },
+  batch2: {
+    default: 'foo',
+  },
 });
 describe('Config', () => {
   it('number', () => {
@@ -68,5 +74,15 @@ describe('Config', () => {
     assert.equal('foo', scope.get('str'));
     scope.set('str', '111');
     assert.equal('111', scope.get('str'));
+  });
+
+  it('batch', () => {
+    const scope = Config.scope('namespace');
+    scope.set('namespace/', {
+      batch1: 10,
+      batch2: 'bar',
+    });
+    assert.equal(10, scope.get('namespace/batch1'));
+    assert.equal('bar', scope.get('namespace/batch2'));
   });
 });
