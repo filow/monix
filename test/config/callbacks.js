@@ -1,6 +1,7 @@
 /* eslint-disable prefer-template */
 const assert = require('assert');
-const Config = require('../../lib/config').default;
+const monix = require('../../');
+const Config = monix.core.Config;
 Config.regist('test', {
   number: {
     default: 1,

@@ -1,5 +1,6 @@
 const assert = require('assert');
-const Config = require('../../lib/config').default;
+const monix = require('../../');
+const Config = monix.core.Config;
 Config.regist('/', {
   number: 1,
   str: 'foo',

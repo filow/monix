@@ -1,4 +1,5 @@
 const u = require('../util');
+import Config from '../config';
 function recursiveEvaluate(obj) {
   if (u.isFunction(obj)) {
     return obj();
@@ -9,28 +10,49 @@ function recursiveEvaluate(obj) {
   }
   return obj;
 }
+Config.regist('response', {
+  404: {
+    default: {
+      code: 404,
+      msg: 'Not Found',
+    },
+  },
+});
 class Response {
   constructor() {
-    this.status = 200;
-    this.header = {
-      'Content-Type': 'application/json',
+    this.defaults = {
+      header: {
+        'Content-Type': 'application/json',
+      },
+      status: 204, // no content
     };
-    this.message = '';
+    this.responses = [];
   }
-  ok(msg) {
-    this.status = 200;
-    this.message = msg;
+  send(code, msg, options = {}) {
+    options.status = code;
+    if (msg) options.msg = msg;
+    this.responses.push(options);
   }
-  notFound() {
-    this.status = 404;
-    this.message = {
-      error: 404,
-      msg: 'Page Not Found',
-    };
+  // 为最常用的200响应而设置的快捷函数
+  ok(msg, options) {
+    this.send(200, msg, options);
   }
-  _render() {
-    const msg = recursiveEvaluate(this.message);
-    this.message = JSON.stringify(msg);
+  hasResponse() {
+    return this.responses.length > 0;
+  }
+  _render(scope) {
+    let response = {};
+    if (this.hasResponse()) {
+      response = this.responses[this.responses.length - 1];
+    }
+    response = u.defaultsDeep(response, this.defaults);
+    if (response.msg || typeof response.msg === 'boolean') {
+      response.msg = recursiveEvaluate(response.msg);
+    } else {
+      response.msg = Config.get(scope, `response/${response.status}`);
+    }
+    response.msg = JSON.stringify(response.msg);
+    return response;
   }
 }
 
@@ -40,10 +62,12 @@ class ResponseHandler {
       const that = new Response();
       ctx.Response = that;
       await next();
-      that._render();
-      ctx.status = that.status;
-      ctx.body = that.message;
-      ctx.set(that.header);
+      const resp = that._render(ctx.configScope);
+      ctx.status = resp.status;
+      ctx.body = resp.msg;
+      if (resp.header) {
+        u.each(resp.header, (v, k) => ctx.set(k, v));
+      }
     };
   }
 }

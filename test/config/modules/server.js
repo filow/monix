@@ -1,7 +1,7 @@
 const assert = require('assert');
 const monix = require('../../../');
-const api = monix.default.api;
-const Config = require('../../../lib/config').default;
+const api = monix.api;
+const Config = monix.core.Config;
 
 describe('Server#config', () => {
   const scope = Config.scope('/');

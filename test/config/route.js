@@ -3,9 +3,9 @@
 const request = require('supertest');
 const assert = require('assert');
 const monix = require('../../');
-const api = monix.default.api;
-const core = monix.default.monix;
-const Config = require('../../lib/config').default;
+const api = monix.api;
+const core = monix.core;
+const Config = core.Config;
 Config.regist('test', {
   foo: 'default',
   hello: 'world',

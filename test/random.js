@@ -1,6 +1,7 @@
 /* eslint-disable prefer-rest-params, func-names, strict */
 'use strict';
-const Random = require('../lib/random').default;
+const monix = require('../');
+const Random = monix.core.Random;
 const assert = require('assert');
 const random = new Random();
 

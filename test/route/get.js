@@ -1,7 +1,7 @@
 const request = require('supertest');
 const monix = require('../../');
-const api = monix.default.api;
-const core = monix.default.monix;
+const api = monix.api;
+const core = monix.core;
 const commonResponse = { msg: 'ok' };
 api.get('/', res => {
   res.ok(commonResponse);
