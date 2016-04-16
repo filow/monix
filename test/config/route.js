@@ -10,6 +10,8 @@ Config.regist('test', {
   hello: 'world',
 });
 
+
+
 api.get('/config', {
   'test/foo': '123',
 }, function (res) {
@@ -27,6 +29,8 @@ api.get('/name', {
   res.ok(this.config.get('name'));
 });
 
+
+
 describe('Config#route#complex', () => {
   const server = core.Server.run();
 
@@ -41,5 +45,26 @@ describe('Config#route#complex', () => {
   it('具名路由', done => {
     request(server).get('/name')
     .expect('"name_route"', done);
+  });
+
+  it('重名路由自动加后缀', done => {
+    api.get('/test/rename+', function (res) {
+      const scope = this.config.scope;
+      res.ok(scope);
+    });
+    api.get('/test/rename-', function (res) {
+      const scope = this.config.scope;
+      res.ok(scope);
+    });
+    api.get('/test/rename*', function (res) {
+      const scope = this.config.scope;
+      res.ok(scope);
+    });
+    request(server).get('/test/rename+')
+    .expect('"get_test_rename"');
+    request(server).get('/test/rename-')
+    .expect('"get_test_rename_1"');
+    request(server).get('/test/rename*')
+    .expect('"get_test_rename_2"', done);
   });
 });
