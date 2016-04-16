@@ -74,4 +74,30 @@ describe('Config', () => {
     assert.equal(10, scope.get('namespace/batch1'));
     assert.equal('bar', scope.get('namespace/batch2'));
   });
+
+  it('不合法命名空间', () => {
+    function errorFn() {
+      Config.regist('_hello', {});
+    }
+    assert.throws(errorFn, /设置项命名空间名称/);
+  });
+
+  it('不合法key', () => {
+    function errorFn() {
+      Config.regist('illegalKey', {
+        __test: '1',
+        '/slash': '/',
+      });
+    }
+    assert.throws(errorFn, /设置项名称/);
+  });
+
+  it('重复注册已注册的key', () => {
+    function errorFn() {
+      Config.regist('namespace', {
+        number: 1,
+      });
+    }
+    assert.throws(errorFn, /已注册的设置项/);
+  });
 });
