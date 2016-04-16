@@ -5,7 +5,7 @@ import Random from '../random';
 import Config from '../config';
 class Router {
   constructor() {
-    this.stack = {};
+    this.stack = [];
     Config.regist('/', {
       name: {
         default: 'global',
@@ -19,11 +19,7 @@ class Router {
     // 获取stack中所有名字前缀与
     const sameNameRoutes = u.filter(
       // 提取[{name: foo}]里面的name
-      u.map(
-        // 将 {GET: [], POST: []}形式的stack转换为[{name: foo}, {} ...]形式
-        u.flatMap(this.stack, e => e),
-        e => e.name
-      ),
+      u.map(this.stack, e => e.name),
       n => n.indexOf(baseName) >= 0
     );
     // 没有可能的重名项目就直接返回
@@ -42,9 +38,9 @@ class Router {
     const regexp = pathToRegexp(path, keys);
     // 如果这个方法的数组还未生成，那么就生成
     const methodUppercase = method.toUpperCase();
-    if (!this.stack[methodUppercase]) this.stack[methodUppercase] = [];
-    this.stack[methodUppercase].push({
+    this.stack.push({
       name,
+      method: methodUppercase,
       regexp,
       keys,
       handler,
@@ -91,8 +87,8 @@ class Router {
     const stack = this.stack;
     return async function router(ctx, next) {
       const parsedUrl = url.parse(ctx.url);
-      const action = u.find(stack[ctx.method],
-        (item) => item.regexp.exec(parsedUrl.pathname)
+      const action = u.find(stack,
+        (item) => item.regexp.exec(parsedUrl.pathname) && item.method === ctx.method
       );
       if (action && action.handler) {
         const random = new Random();
