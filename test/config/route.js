@@ -1,6 +1,7 @@
 /* eslint-disable prefer-arrow-callback,func-names */
 // 测试路由内部设置项的读取和设置功能
 const request = require('supertest');
+const assert = require('assert');
 const monix = require('../../');
 const api = monix.default.api;
 const core = monix.default.monix;
@@ -9,8 +10,6 @@ Config.regist('test', {
   foo: 'default',
   hello: 'world',
 });
-
-
 
 api.get('/config', {
   'test/foo': '123',
@@ -28,8 +27,6 @@ api.get('/name', {
 }, function (res) {
   res.ok(this.config.get('name'));
 });
-
-
 
 describe('Config#route#complex', () => {
   const server = core.Server.run();
@@ -66,5 +63,14 @@ describe('Config#route#complex', () => {
     .expect('"get_test_rename_1"');
     request(server).get('/test/rename*')
     .expect('"get_test_rename_2"', done);
+  });
+
+  it('同名路由抛出异常', () => {
+    function errorFn() {
+      api.get('/name2', {
+        name: 'name_route',
+      }, {});
+    }
+    assert.throws(errorFn, /路由名称已存在/);
   });
 });
