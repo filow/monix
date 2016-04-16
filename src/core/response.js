@@ -17,6 +17,11 @@ Config.regist('response', {
       msg: 'Not Found',
     },
   },
+  // 强制使用某一种返回类型
+  forceStatus: {
+    default: null,
+    validators: [Config.v.type('number')],
+  },
 });
 class Response {
   constructor() {
@@ -41,18 +46,28 @@ class Response {
     return this.responses.length > 0;
   }
   _render(scope) {
-    let response = {};
-    if (this.hasResponse()) {
-      response = this.responses[this.responses.length - 1];
+    let resp = {};
+    let responses = this.responses;
+    // 强制状态下，只筛选该状态的内容
+    const forceStatus = Config.get(scope, 'response/forceStatus');
+    if (forceStatus) {
+      responses = u.filter(responses, e => e.status === forceStatus);
     }
-    response = u.defaultsDeep(response, this.defaults);
-    if (response.msg || typeof response.msg === 'boolean') {
-      response.msg = recursiveEvaluate(response.msg);
+    // 如果响应体列表存在符合要求的status，则使用，否则将置为该status下的默认返回值
+    if (responses.length > 0) {
+      resp = responses[responses.length - 1];
+    } else if (forceStatus) {
+      resp = { status: forceStatus };
+    }
+    resp = u.defaultsDeep(resp, this.defaults);
+
+    if (resp.msg || typeof resp.msg === 'boolean') {
+      resp.msg = recursiveEvaluate(resp.msg);
     } else {
-      response.msg = Config.get(scope, `response/${response.status}`);
+      resp.msg = Config.get(scope, `response/${resp.status}`);
     }
-    response.msg = JSON.stringify(response.msg);
-    return response;
+    resp.msg = JSON.stringify(resp.msg);
+    return resp;
   }
 }
 
