@@ -3,19 +3,34 @@ const url = require('url');
 import pathToRegexp from 'path-to-regexp';
 import Random from '../random';
 import Config from '../config';
-function generateRouteName(method, path) {
-  const pathUnderscore = path.toString().replace(/[^\w]+/g, '_');
-  // 可能会因为path第一个字符是非字母字符而导致出现连续的两个_
-  return `${method.toLowerCase()}_${pathUnderscore}`.replace(/[_]+/g, '_');
-}
 class Router {
   constructor() {
-    this.stack = {};
+    this.stack = [];
     Config.regist('/', {
       name: {
         default: 'global',
       },
     });
+  }
+  _generateRouteName(method, path) {
+    const pathUnderscore = path.toString().replace(/[^\w]+/g, '_');
+    // 可能会因为path第一个字符是非字母字符而导致出现连续的两个_
+    const baseName = `${method.toLowerCase()}_${pathUnderscore}`.replace(/[_]+/g, '_');
+    // 获取stack中所有名字前缀与
+    const sameNameRoutes = u.filter(
+      // 提取[{name: foo}]里面的name
+      u.map(this.stack, e => e.name),
+      n => n.indexOf(baseName) >= 0
+    );
+    // 没有可能的重名项目就直接返回
+    if (sameNameRoutes.length === 0) return baseName;
+    let index = 1;
+    let lastAttemptName = '';
+    do {
+      lastAttemptName = baseName + index;
+      index++;
+    } while (sameNameRoutes.indexOf(lastAttemptName) >= 0);
+    return lastAttemptName;
   }
   _addRouteToStack(name, method, path, handler) {
     const keys = [];
@@ -23,9 +38,9 @@ class Router {
     const regexp = pathToRegexp(path, keys);
     // 如果这个方法的数组还未生成，那么就生成
     const methodUppercase = method.toUpperCase();
-    if (!this.stack[methodUppercase]) this.stack[methodUppercase] = [];
-    this.stack[methodUppercase].push({
+    this.stack.push({
       name,
+      method: methodUppercase,
       regexp,
       keys,
       handler,
@@ -39,32 +54,33 @@ class Router {
     if (!u.isString(path) && !u.isRegExp(path)) u.error('路由应当为字符串或正则表达式，不能为', path);
 
     let handler;
-    let name = generateRouteName(method, path);
+    let name = this._generateRouteName(method, path);
     let opt = {};
-    // 判断参数的类型，确定回调函数和参数的位置
-    if (u.isObject(options[0]) && !u.isFunction(options[0])) {
-        // (path, option, callback)
-      if (u.isFunction(options[1])) {
-        opt = options[0];
-        handler = options[1];
-        if (opt.name) {
-          name = opt.name;
-        }
-        const scope = Config.scope(name);
-        u.each(opt, (v, k) => {
-          scope.set(k, v);
-        });
-        scope.set('name', name);
-      } else {
-        // (path, data)
-        // 将直接返回数据包装成函数，保证数据类型一致
-        handler = (res) => res.ok(options[0]);
+    // 根据传入参数的数量判断是那种调用形式
+    // (path, option, data/fn)
+    if (options.length >= 2) {
+      opt = options[0];
+      handler = options[1];
+      if (!u.isPlainObject(opt)) {
+        u.error('非法的路由函数调用，当以(path, options, data/fn形式调用时，第二个参数必须是一个简单对象)');
       }
-      // (path, callback)
-    } else if (u.isFunction(options[0])) {
-      handler = options[0];
+      // 如果传入了name参数，以传入的为准
+      if (opt.name) {
+        // 不允许同名的存在
+        if (u.find(this.stack, (e) => e.name === opt.name)) {
+          u.error('以设置项命名路由时发生错误：该路由名称已存在');
+        }
+        name = opt.name;
+      }
+      // 复制参数列表到路由命名空间下
+      const scope = Config.scope(name);
+      u.each(opt, (v, k) => {
+        scope.set(k, v);
+      });
+      scope.set('name', name);
     } else {
-      u.error('非法的路由函数调用。仅支持(path, option, callback), (path, callback)和(path, data)');
+      // (path, data/fn)
+      handler = options[0];
     }
     this._addRouteToStack(name, method, path, handler);
   }
@@ -72,16 +88,20 @@ class Router {
     const stack = this.stack;
     return async function router(ctx, next) {
       const parsedUrl = url.parse(ctx.url);
-      const action = u.find(stack[ctx.method],
-        (item) => item.regexp.exec(parsedUrl.pathname)
+      const action = u.find(stack,
+        (item) => item.regexp.exec(parsedUrl.pathname) && item.method === ctx.method
       );
       if (action && action.handler) {
         const random = new Random();
-        action.handler.call({
-          res: ctx.Response,
-          rnd: random,
-          config: Config.scope(`${action.name}`),
-        }, ctx.Response, random);
+        if (u.isFunction(action.handler)) {
+          action.handler.call({
+            res: ctx.Response,
+            rnd: random,
+            config: Config.scope(`${action.name}`),
+          }, ctx.Response, random);
+        } else {
+          ctx.Response.ok(action.handler);
+        }
       } else {
         // 路由未找到的处理
         ctx.Response.notFound();
