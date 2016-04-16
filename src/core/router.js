@@ -96,11 +96,15 @@ class Router {
         ctx.configScope = action.name;
         const random = new Random();
         if (u.isFunction(action.handler)) {
-          action.handler.call({
+          const retVal = action.handler.call({
             res: ctx.Response,
             rnd: random,
             config: Config.scope(`${action.name}`),
           }, ctx.Response, random);
+          // 如果用户没有在函数体内部调用res.ok/send方法，就以函数返回值作为结果
+          if (!ctx.Response.hasResponse()) {
+            ctx.Response.ok(retVal);
+          }
         } else {
           ctx.Response.ok(action.handler);
         }

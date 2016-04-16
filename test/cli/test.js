@@ -43,8 +43,4 @@ get('/options', {}, res => {
   res.ok({ msg: 'ok' });
 });
 
-get('/404/config', {
-  'response/404': 'NotFound',
-}, res => {
-  res.send(404);
-});
+get('/nores', () => 'NoRes');

@@ -3,6 +3,7 @@ const monix = require('../../');
 const api = monix.api;
 const core = monix.core;
 
+// 高级用法中，使用res.ok创建多重结果，默认选取最后一次出现的
 api.get('/function', res => {
   res.ok(() => 111);
 });
