@@ -42,3 +42,5 @@ get('/number', res => {
 get('/options', {}, res => {
   res.ok({ msg: 'ok' });
 });
+
+get('/nores', () => 'NoRes');

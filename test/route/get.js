@@ -1,33 +1,22 @@
 const request = require('supertest');
 const monix = require('../../');
-const api = monix.default.api;
-const core = monix.default.monix;
+const api = monix.api;
+const core = monix.core;
 const commonResponse = { msg: 'ok' };
-api.get('/', res => {
-  res.ok(commonResponse);
-});
+// 可以直接传入数据作为结果
+api.get('/', commonResponse);
 
-api.get('/string', res => {
-  res.ok('ok');
-});
+api.get('/string', 'ok');
 
 api.get('/short_cut', commonResponse);
 
-api.get('/users/:id', res => {
-  res.ok(commonResponse);
-});
+api.get('/users/:id', commonResponse);
 
-api.get(/\/users\/\d+/, res => {
-  res.ok(commonResponse);
-});
+api.get(/\/users\/\d+/, commonResponse);
 
-api.get('/number', res => {
-  res.ok(123456);
-});
-
-api.get('/options', {}, res => {
-  res.ok(commonResponse);
-});
+api.get('/number', 123456);
+// 也可以利用一个函数的返回值作为结果
+api.get('/options', {}, () => commonResponse);
 
 describe('route#get', () => {
   const server = core.Server.run();

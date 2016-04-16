@@ -2,6 +2,11 @@
 import Router from './core/router';
 import Random from './random';
 import Config from './config';
+
+// System-Level API
+import Server from './server';
+const core = { Server, Router, Config, Random };
+
 // User-Level API
 const api = {
   R: new Random(),
@@ -9,11 +14,8 @@ const api = {
   get: function get(path, ...other) {
     Router.regist('get', path, other);
   },
+  core,
 };
-export { api };
 
 
-// System-Level API
-import Server from './server';
-const core = { Server, Router };
-export { core };
+module.exports = { api, core };

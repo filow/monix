@@ -91,20 +91,27 @@ class Router {
       const action = u.find(stack,
         (item) => item.regexp.exec(parsedUrl.pathname) && item.method === ctx.method
       );
+
       if (action && action.handler) {
+        ctx.configScope = action.name;
         const random = new Random();
         if (u.isFunction(action.handler)) {
-          action.handler.call({
+          const retVal = action.handler.call({
             res: ctx.Response,
             rnd: random,
             config: Config.scope(`${action.name}`),
           }, ctx.Response, random);
+          // 如果用户没有在函数体内部调用res.ok/send方法，就以函数返回值作为结果
+          if (!ctx.Response.hasResponse()) {
+            ctx.Response.ok(retVal);
+          }
         } else {
           ctx.Response.ok(action.handler);
         }
       } else {
+        ctx.configScope = 'not_found_scope';
         // 路由未找到的处理
-        ctx.Response.notFound();
+        ctx.Response.send(404);
       }
       await next();
     };

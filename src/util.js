@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 export {
   isString, isRegExp, isFunction, isArray, isPlainObject, mapValues,
-  find, each, mixin, map, filter } from 'lodash';
+  find, each, mixin, map, filter, defaultsDeep } from 'lodash';
 
 import color from 'chalk';
 const levelColor = {

@@ -1,8 +1,9 @@
 const request = require('supertest');
 const monix = require('../../');
-const api = monix.default.api;
-const core = monix.default.monix;
+const api = monix.api;
+const core = monix.core;
 
+// 高级用法中，使用res.ok创建多重结果，默认选取最后一次出现的
 api.get('/function', res => {
   res.ok(() => 111);
 });
@@ -26,6 +27,18 @@ api.get('/nested', (res, r) => {
       key: 'key',
     },
   });
+});
+
+api.get('/responseConfig', (res) => {
+  res.ok({ msg: 'ok' }, {
+    header: {
+      'X-Test-Key': 'Foo',
+    },
+  });
+});
+
+api.get('/res.send', (res) => {
+  res.send(304, { msg: 'ok' });
 });
 
 
@@ -55,5 +68,16 @@ describe('route#complex', () => {
         key: 'key',
       },
     }, done);
+  });
+
+  it('带参数的res.ok方法', done => {
+    request(server).get('/responseConfig')
+    .expect('X-Test-Key', 'Foo')
+    .expect({ msg: 'ok' }, done);
+  });
+
+  it('res.send', done => {
+    request(server).get('/res.send')
+    .expect(304, done);
   });
 });

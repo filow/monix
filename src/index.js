@@ -8,7 +8,4 @@ Server.use(Response.middleware());
 // 核心路由组件
 Server.use(Router.middleware());
 
-export default {
-  api,
-  monix: core,
-};
+module.exports = { api, core };

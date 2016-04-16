@@ -1,4 +1,5 @@
 const u = require('../util');
+import Config from '../config';
 function recursiveEvaluate(obj) {
   if (u.isFunction(obj)) {
     return obj();
@@ -9,28 +10,64 @@ function recursiveEvaluate(obj) {
   }
   return obj;
 }
+Config.regist('response', {
+  404: {
+    default: {
+      code: 404,
+      msg: 'Not Found',
+    },
+  },
+  // 强制使用某一种返回类型
+  forceStatus: {
+    default: null,
+    validators: [Config.v.type('number')],
+  },
+});
 class Response {
   constructor() {
-    this.status = 200;
-    this.header = {
-      'Content-Type': 'application/json',
+    this.defaults = {
+      header: {
+        'Content-Type': 'application/json',
+      },
+      status: 204, // no content
     };
-    this.message = '';
+    this.responses = [];
   }
-  ok(msg) {
-    this.status = 200;
-    this.message = msg;
+  send(code, msg, options = {}) {
+    options.status = code;
+    if (msg) options.msg = msg;
+    this.responses.push(options);
   }
-  notFound() {
-    this.status = 404;
-    this.message = {
-      error: 404,
-      msg: 'Page Not Found',
-    };
+  // 为最常用的200响应而设置的快捷函数
+  ok(msg, options) {
+    this.send(200, msg, options);
   }
-  _render() {
-    const msg = recursiveEvaluate(this.message);
-    this.message = JSON.stringify(msg);
+  hasResponse() {
+    return this.responses.length > 0;
+  }
+  _render(scope) {
+    let resp = {};
+    let responses = this.responses;
+    // 强制状态下，只筛选该状态的内容
+    const forceStatus = Config.get(scope, 'response/forceStatus');
+    if (forceStatus) {
+      responses = u.filter(responses, e => e.status === forceStatus);
+    }
+    // 如果响应体列表存在符合要求的status，则使用，否则将置为该status下的默认返回值
+    if (responses.length > 0) {
+      resp = responses[responses.length - 1];
+    } else if (forceStatus) {
+      resp = { status: forceStatus };
+    }
+    resp = u.defaultsDeep(resp, this.defaults);
+
+    if (resp.msg || typeof resp.msg === 'boolean') {
+      resp.msg = recursiveEvaluate(resp.msg);
+    } else {
+      resp.msg = Config.get(scope, `response/${resp.status}`);
+    }
+    resp.msg = JSON.stringify(resp.msg);
+    return resp;
   }
 }
 
@@ -40,10 +77,12 @@ class ResponseHandler {
       const that = new Response();
       ctx.Response = that;
       await next();
-      that._render();
-      ctx.status = that.status;
-      ctx.body = that.message;
-      ctx.set(that.header);
+      const resp = that._render(ctx.configScope);
+      ctx.status = resp.status;
+      ctx.body = resp.msg;
+      if (resp.header) {
+        u.each(resp.header, (v, k) => ctx.set(k, v));
+      }
     };
   }
 }

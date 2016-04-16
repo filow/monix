@@ -3,8 +3,8 @@ const fs = require('fs');
 const vm = require('vm');
 const monix = require('../');
 const u = require('../lib/util');
-const api = monix.default.api;
-const core = monix.default.monix;
+const api = monix.api;
+const core = monix.core;
 // 暴露API
 u.mixin(global, api);
 
