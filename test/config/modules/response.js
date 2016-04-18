@@ -42,4 +42,22 @@ describe('Response#config', () => {
     request(server).get('/forceStatus/noMatch')
     .expect(404, /默认内容/, done);
   });
+
+  it('定制Header', done => {
+    api.set('header/X-Top-Level', 'TopLevel');
+    api.get('/headerCustomize', {
+      'header/': {
+        'X-Sub-Level': 'SubLevel',
+      },
+    }, (res) => res.ok('value', {
+      header: {
+        'X-Response-Level': 'ResponseLevel',
+      },
+    }));
+    request(server).get('/headerCustomize')
+    .expect('X-Top-Level', 'TopLevel')
+    .expect('X-Sub-Level', 'SubLevel')
+    .expect('X-Response-Level', 'ResponseLevel')
+    .expect(200, '"value"', done);
+  });
 });

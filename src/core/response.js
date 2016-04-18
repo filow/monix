@@ -1,5 +1,6 @@
 const u = require('../util');
 import Config from '../config';
+const registedHeader = [];
 function recursiveEvaluate(obj) {
   if (u.isFunction(obj)) {
     return obj();
@@ -21,6 +22,14 @@ Config.registDynamic('response', /[12345]\d{2}/, {
   default: {
     msg: '请设置默认响应内容',
   },
+});
+// 支持定义作用域内的header属性，将随请求发送
+Config.registDynamic('header', /[A-Za-z0-9\-]+/, {
+  default: '',
+  validators: [Config.v.type('string')],
+}, (key) => {
+  registedHeader.push(key);
+  return true;
 });
 class Response {
   constructor() {
@@ -59,13 +68,23 @@ class Response {
       resp = { status: forceStatus, msg: `请通过set('response/${forceStatus}')来定义该状态码下的默认内容` };
     }
     resp = u.defaultsDeep(resp, this.defaults);
-
+    // 处理返回的内容
     if (resp.msg || typeof resp.msg === 'boolean') {
       resp.msg = recursiveEvaluate(resp.msg);
     } else {
       resp.msg = Config.get(scope, `response/${resp.status}`);
     }
     resp.msg = JSON.stringify(resp.msg);
+
+    // 接下来处理HTTP header
+    const headersInConfig = {};
+    u.each(registedHeader, e => {
+      const value = Config.get(scope, `header/${e}`);
+      if (value !== '') headersInConfig[e] = value;
+    });
+    const finalHeader = u.merge(headersInConfig, resp.header);
+
+    resp.header = finalHeader;
     return resp;
   }
 }

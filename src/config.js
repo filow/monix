@@ -29,7 +29,7 @@ function regist(namespace, descriptor) {
   const prefix = namespace === '/' ? '' : `${namespace}/`;
   u.each(descriptor, (item, key) => {
     // 检测key合法性
-    if (!key.match(/^[A-Za-z0-9\.]+$/)) u.error(`设置项名称不能为${key}，它只能由字母、数字和.组成`);
+    if (!key.match(/^[A-Za-z0-9\.\-]+$/)) u.error(`设置项名称不能为${key}，它只能由字母、数字和.组成`);
 
     const fullName = prefix + key;
     // 检测该命名空间下的key是否被注册过，若已注册过，则拒绝注册
@@ -58,7 +58,7 @@ function registDynamic(namespace, keyRule, descriptor, onRegist) {
 // 没有注册过的key应该再检查是否存在对应的动态键
 // 首先要检查这个key是不是符合namespace/key形式，由于根作用域不能注册动态键，所以这样检查就足够了
 function registByDynamic(nsAndKey) {
-  const matchResult = nsAndKey.match(/([\w\.]+)\/([\w\.]+)/);
+  const matchResult = nsAndKey.match(/([\w\.]+)\/([\w\.\-]+)/);
   if (matchResult) {
     const namespace = matchResult[1];
     const key = matchResult[2];
