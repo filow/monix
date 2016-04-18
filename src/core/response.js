@@ -1,6 +1,20 @@
 const u = require('../util');
 import Config from '../config';
 const registedHeader = [];
+const formatter = {
+  json(resp) {
+    resp.msg = JSON.stringify(resp.msg);
+    resp.header['Content-Type'] = 'application/json';
+  },
+  plain(resp) {
+    resp.msg = resp.msg.toString();
+    resp.header['Content-Type'] = 'text/plain';
+  },
+  html(resp) {
+    resp.msg = resp.msg.toString();
+    resp.header['Content-Type'] = 'text/html';
+  },
+};
 function recursiveEvaluate(obj) {
   if (u.isFunction(obj)) {
     return obj();
@@ -16,6 +30,10 @@ Config.regist('response', {
   forceStatus: {
     default: null,
     validators: [Config.v.type('number')],
+  },
+  format: {
+    default: 'json',
+    validators: [Config.v.inArray(['json', 'plain', 'html'])],
   },
 });
 Config.registDynamic('response', /[12345]\d{2}/, {
@@ -34,9 +52,7 @@ Config.registDynamic('header', /[A-Za-z0-9\-]+/, {
 class Response {
   constructor() {
     this.defaults = {
-      header: {
-        'Content-Type': 'application/json',
-      },
+      header: {},
       status: 204, // no content
     };
     this.responses = [];
@@ -74,8 +90,9 @@ class Response {
     } else {
       resp.msg = Config.get(scope, `response/${resp.status}`);
     }
-    resp.msg = JSON.stringify(resp.msg);
-
+    const format = Config.get(scope, 'response/format');
+    // 将对象按照指定格式输出
+    formatter[format](resp);
     // 接下来处理HTTP header
     const headersInConfig = {};
     u.each(registedHeader, e => {

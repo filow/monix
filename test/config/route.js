@@ -44,23 +44,29 @@ describe('Config#route#complex', () => {
     .expect('"name_route"', done);
   });
 
-  it('重名路由自动加后缀', done => {
+  it('重名路由自动加后缀1', done => {
     api.get('/test/rename+', function (res) {
       const scope = this.config.scope;
       res.ok(scope);
     });
+    request(server).get('/test/rename+')
+    .expect('"get_test_rename_"', done);
+  });
+
+  it('重名路由自动加后缀2', done => {
     api.get('/test/rename-', function (res) {
       const scope = this.config.scope;
       res.ok(scope);
     });
+    request(server).get('/test/rename-')
+    .expect('"get_test_rename_1"', done);
+  });
+
+  it('重名路由自动加后缀3', done => {
     api.get('/test/rename*', function (res) {
       const scope = this.config.scope;
       res.ok(scope);
     });
-    request(server).get('/test/rename+')
-    .expect('"get_test_rename"');
-    request(server).get('/test/rename-')
-    .expect('"get_test_rename_1"');
     request(server).get('/test/rename*')
     .expect('"get_test_rename_2"', done);
   });

@@ -29,16 +29,22 @@ api.get('/forceStatus/noMatch', {
 
 describe('Response#config', () => {
   const server = core.Server.run();
-  it('404默认响应内容定制', done => {
+  it('404默认响应内容定制-默认返回内容', done => {
     request(server).get('/404/default')
-    .expect(404, Config.get('/', 'response/404'));
+    .expect(404, Config.get('/', 'response/404'), done);
+  });
+
+  it('404默认响应内容定制-设置项内容', done => {
     request(server).get('/404/config')
     .expect(404, '"NotFound"', done);
   });
 
-  it('强制路由返回值', done => {
+  it('强制路由返回值-normal', done => {
     request(server).get('/forceStatus/normal')
-    .expect(401, 'Forbidden');
+    .expect(401, '"Forbidden"', done);
+  });
+
+  it('强制路由返回值-nomatch', done => {
     request(server).get('/forceStatus/noMatch')
     .expect(404, /默认内容/, done);
   });
@@ -59,5 +65,20 @@ describe('Response#config', () => {
     .expect('X-Sub-Level', 'SubLevel')
     .expect('X-Response-Level', 'ResponseLevel')
     .expect(200, '"value"', done);
+  });
+
+  it('定制输出格式-plain', done => {
+    api.get('/format/plain', { 'response/format': 'plain' }, { msg: 'ok' });
+    request(server).get('/format/plain')
+    .expect('Content-Type', 'text/plain')
+    .expect(200, '[object Object]', done);
+  });
+
+  it('定制输出格式-html', done => {
+    api.get('/format/html', { 'response/format': 'html' }, '<html></html>');
+
+    request(server).get('/format/html')
+    .expect('Content-Type', 'text/html')
+    .expect(200, '<html></html>', done);
   });
 });
