@@ -40,6 +40,6 @@ describe('Response#config', () => {
     request(server).get('/forceStatus/normal')
     .expect(401, 'Forbidden');
     request(server).get('/forceStatus/noMatch')
-    .expect(404, Config.get('/', 'response/404'), done);
+    .expect(404, /默认内容/, done);
   });
 });

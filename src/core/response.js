@@ -11,16 +11,15 @@ function recursiveEvaluate(obj) {
   return obj;
 }
 Config.regist('response', {
-  404: {
-    default: {
-      code: 404,
-      msg: 'Not Found',
-    },
-  },
   // 强制使用某一种返回类型
   forceStatus: {
     default: null,
     validators: [Config.v.type('number')],
+  },
+});
+Config.registDynamic('response', /[12345]\d{2}/, {
+  default: {
+    msg: '请设置默认响应内容',
   },
 });
 class Response {
@@ -57,7 +56,7 @@ class Response {
     if (responses.length > 0) {
       resp = responses[responses.length - 1];
     } else if (forceStatus) {
-      resp = { status: forceStatus };
+      resp = { status: forceStatus, msg: `请通过set('response/${forceStatus}')来定义该状态码下的默认内容` };
     }
     resp = u.defaultsDeep(resp, this.defaults);
 
