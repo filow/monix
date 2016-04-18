@@ -1,20 +1,19 @@
 const request = require('supertest');
-const monix = require('../../../');
-const api = monix.api;
-const core = monix.core;
+const mo = require('../../../');
+const core = mo.core;
 const Config = core.Config;
 
-api.get('/404/default', res => {
+mo.get('/404/default', res => {
   res.send(404);
 });
 
-api.get('/404/config', {
+mo.get('/404/config', {
   'response/404': 'NotFound',
 }, res => {
   res.send(404);
 });
 
-api.get('/forceStatus/normal', {
+mo.get('/forceStatus/normal', {
   'response/forceStatus': 401,
 }, res => {
   res.send(401, 'Forbidden');
@@ -22,7 +21,7 @@ api.get('/forceStatus/normal', {
   res.send(201, 'Created');
 });
 
-api.get('/forceStatus/noMatch', {
+mo.get('/forceStatus/noMatch', {
   'response/forceStatus': 404,
 }, 'normal');
 
@@ -50,8 +49,8 @@ describe('Response#config', () => {
   });
 
   it('定制Header', done => {
-    api.set('header/X-Top-Level', 'TopLevel');
-    api.get('/headerCustomize', {
+    mo.set('header/X-Top-Level', 'TopLevel');
+    mo.get('/headerCustomize', {
       'header/': {
         'X-Sub-Level': 'SubLevel',
       },
@@ -68,14 +67,14 @@ describe('Response#config', () => {
   });
 
   it('定制输出格式-plain', done => {
-    api.get('/format/plain', { 'response/format': 'plain' }, { msg: 'ok' });
+    mo.get('/format/plain', { 'response/format': 'plain' }, { msg: 'ok' });
     request(server).get('/format/plain')
     .expect('Content-Type', 'text/plain')
     .expect(200, '[object Object]', done);
   });
 
   it('定制输出格式-html', done => {
-    api.get('/format/html', { 'response/format': 'html' }, '<html></html>');
+    mo.get('/format/html', { 'response/format': 'html' }, '<html></html>');
 
     request(server).get('/format/html')
     .expect('Content-Type', 'text/html')

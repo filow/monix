@@ -2,16 +2,15 @@
 // 测试路由内部设置项的读取和设置功能
 const request = require('supertest');
 const assert = require('assert');
-const monix = require('../../');
-const api = monix.api;
-const core = monix.core;
+const mo = require('../../');
+const core = mo.core;
 const Config = core.Config;
 Config.regist('test', {
   foo: 'default',
   hello: 'world',
 });
 
-api.get('/config', {
+mo.get('/config', {
   'test/foo': '123',
 }, function (res) {
   const foo = this.config.get('test/foo');
@@ -22,7 +21,7 @@ api.get('/config', {
   });
 });
 
-api.get('/name', {
+mo.get('/name', {
   name: 'name_route',
 }, function (res) {
   res.ok(this.config.get('name'));
@@ -45,7 +44,7 @@ describe('Config#route#complex', () => {
   });
 
   it('重名路由自动加后缀1', done => {
-    api.get('/test/rename+', function (res) {
+    mo.get('/test/rename+', function (res) {
       const scope = this.config.scope;
       res.ok(scope);
     });
@@ -54,7 +53,7 @@ describe('Config#route#complex', () => {
   });
 
   it('重名路由自动加后缀2', done => {
-    api.get('/test/rename-', function (res) {
+    mo.get('/test/rename-', function (res) {
       const scope = this.config.scope;
       res.ok(scope);
     });
@@ -63,7 +62,7 @@ describe('Config#route#complex', () => {
   });
 
   it('重名路由自动加后缀3', done => {
-    api.get('/test/rename*', function (res) {
+    mo.get('/test/rename*', function (res) {
       const scope = this.config.scope;
       res.ok(scope);
     });
@@ -73,7 +72,7 @@ describe('Config#route#complex', () => {
 
   it('同名路由抛出异常', () => {
     function errorFn() {
-      api.get('/name2', {
+      mo.get('/name2', {
         name: 'name_route',
       }, {});
     }

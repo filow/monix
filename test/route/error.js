@@ -1,6 +1,5 @@
-const monix = require('../../');
-const api = monix.api;
-const core = monix.core;
+const mo = require('../../');
+const core = mo.core;
 const should = require('should');
 
 describe('route#error', () => {
@@ -14,12 +13,12 @@ describe('route#error', () => {
   });
   it('三参数调用时第二个参数必须是object', () => {
     const badOptionCall = function badOptionCall() {
-      api.get('/t1', 111, () => {});
+      mo.get('/t1', 111, () => {});
     };
     should(badOptionCall).throw(Error);
 
     const badOptionCallString = function badOptionCallString() {
-      api.get('/t1', 'String', () => {});
+      mo.get('/t1', 'String', () => {});
     };
     should(badOptionCallString).throw(Error);
   });
