@@ -4,9 +4,11 @@ import pathToRegexp from 'path-to-regexp';
 export default class Router {
   static _onload(exports, api) {
     const router = new Router(exports);
-    api.get = (path, ...other) => {
-      router.regist('get', path, other);
-    };
+    ['get', 'post', 'put', 'patch', 'delete'].forEach(verb => {
+      api[verb] = (path, ...other) => {
+        router.regist(verb, path, other);
+      };
+    });
     api.middleware(router.middleware());
     return router;
   }
