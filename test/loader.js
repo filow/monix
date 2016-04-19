@@ -1,4 +1,4 @@
-/* eslint-disable prefer-arrow-callback */
+/* eslint-disable prefer-arrow-callback, strict */
 'use strict';
 const assert = require('assert');
 const Loader = require('../lib/loader.js').default;
