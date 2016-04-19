@@ -9,6 +9,13 @@ export default class Router {
         router.regist(verb, path, other);
       };
     });
+    api.match = (verb, path, ...other) => {
+      if (typeof verb === 'string' && verb.match(/^[a-zA-Z]+$/)) {
+        router.regist(verb, path, other);
+      } else {
+        u.error('match方法所匹配的HTTP动词只能为一个由字母组成的string');
+      }
+    };
     api.middleware(router.middleware());
     return router;
   }
