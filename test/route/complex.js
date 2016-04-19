@@ -1,22 +1,21 @@
 const request = require('supertest');
-const monix = require('../../');
-const api = monix.api;
-const core = monix.core;
+const mo = require('../../');
+const core = mo.core;
 
 // 高级用法中，使用res.ok创建多重结果，默认选取最后一次出现的
-api.get('/function', res => {
+mo.get('/function', res => {
   res.ok(() => 111);
 });
 
-api.get('/array', res => {
+mo.get('/array', res => {
   res.ok(() => [1, 2, 3]);
 });
 
-api.get('/random', (res, r) => {
+mo.get('/random', (res, r) => {
   res.ok(r.randexp(/s{3}/));
 });
 
-api.get('/nested', (res, r) => {
+mo.get('/nested', (res, r) => {
   res.ok({
     id: r.integer({ min: 5, max: 5 }),
     array: [4, 'hello', { a: 1 },
@@ -29,7 +28,7 @@ api.get('/nested', (res, r) => {
   });
 });
 
-api.get('/responseConfig', (res) => {
+mo.get('/responseConfig', (res) => {
   res.ok({ msg: 'ok' }, {
     header: {
       'X-Test-Key': 'Foo',
@@ -37,13 +36,13 @@ api.get('/responseConfig', (res) => {
   });
 });
 
-api.get('/res.send', (res) => {
+mo.get('/res.send', (res) => {
   res.send(304, { msg: 'ok' });
 });
 
 
 describe('route#complex', () => {
-  const server = core.Server.run();
+  const server = core.Server._koa.listen();
   it('function', done => {
     request(server).get('/function')
     .expect('111', done);

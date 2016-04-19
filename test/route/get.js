@@ -1,25 +1,24 @@
 const request = require('supertest');
-const monix = require('../../');
-const api = monix.api;
-const core = monix.core;
+const mo = require('../../');
+const core = mo.core;
 const commonResponse = { msg: 'ok' };
 // 可以直接传入数据作为结果
-api.get('/', commonResponse);
+mo.get('/', commonResponse);
 
-api.get('/string', 'ok');
+mo.get('/string', 'ok');
 
-api.get('/short_cut', commonResponse);
+mo.get('/short_cut', commonResponse);
 
-api.get('/users/:id', commonResponse);
+mo.get('/users/:id', commonResponse);
 
-api.get(/\/users\/\d+/, commonResponse);
+mo.get(/\/users\/\d+/, commonResponse);
 
-api.get('/number', 123456);
+mo.get('/number', 123456);
 // 也可以利用一个函数的返回值作为结果
-api.get('/options', {}, () => commonResponse);
+mo.get('/options', {}, () => commonResponse);
 
 describe('route#get', () => {
-  const server = core.Server.run();
+  const server = core.Server._koa.listen();
   it('(/) => Object', done => {
     request(server).get('/')
     .expect(200, commonResponse, done);

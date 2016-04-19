@@ -1,11 +1,19 @@
 const u = require('../util');
 const url = require('url');
 import pathToRegexp from 'path-to-regexp';
-import Random from '../random';
-import Config from '../config';
-class Router {
-  constructor() {
+export default class Router {
+  static _onload(exports, api) {
+    const router = new Router(exports);
+    api.get = (path, ...other) => {
+      router.regist('get', path, other);
+    };
+    api.middleware(router.middleware());
+    return router;
+  }
+  constructor({ Config, Random }) {
     this.stack = [];
+    this.Config = Config;
+    this.Random = Random;
     Config.regist('/', {
       name: {
         default: 'global',
@@ -20,7 +28,7 @@ class Router {
     const sameNameRoutes = u.filter(
       // 提取[{name: foo}]里面的name
       u.map(this.stack, e => e.name),
-      n => n.indexOf(baseName) >= 0
+      n => n.startsWith(baseName)
     );
     // 没有可能的重名项目就直接返回
     if (sameNameRoutes.length === 0) return baseName;
@@ -67,13 +75,13 @@ class Router {
       // 如果传入了name参数，以传入的为准
       if (opt.name) {
         // 不允许同名的存在
-        if (u.find(this.stack, (e) => e.name === opt.name)) {
+        if (this.stack.find((e) => e.name === opt.name)) {
           u.error('以设置项命名路由时发生错误：该路由名称已存在');
         }
         name = opt.name;
       }
       // 复制参数列表到路由命名空间下
-      const scope = Config.scope(name);
+      const scope = this.Config.scope(name);
       u.each(opt, (v, k) => {
         scope.set(k, v);
       });
@@ -86,9 +94,11 @@ class Router {
   }
   middleware() {
     const stack = this.stack;
+    const Random = this.Random;
+    const Config = this.Config;
     return async function router(ctx, next) {
       const parsedUrl = url.parse(ctx.url);
-      const action = u.find(stack,
+      const action = stack.find(
         (item) => item.regexp.exec(parsedUrl.pathname) && item.method === ctx.method
       );
 
@@ -117,7 +127,3 @@ class Router {
     };
   }
 }
-
-
-// 只允许一个Router实例存在
-export default new Router();

@@ -55,6 +55,13 @@ describe('动态设置项', () => {
     assert.throws(errorFn, /不能在根域上注册/);
   });
 
+  it('不存在的命名空间', () => {
+    // 正常情况
+    assert(typeof scope.get('nonExist/100') === 'undefined');
+    scope.set('nonExist/100', 500);
+    assert(typeof scope.get('nonExist/100') === 'undefined');
+  });
+
   it('不合法的命名空间', () => {
     function errorFn() {
       Config.registDynamic('_foo', /\w+/, 'testVal');
