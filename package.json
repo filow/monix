@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "A Node.js Tool For Emulating Web APIs, easy but powerful.(基于NodeJS的Web API模拟工具，以最简单的方式实现强大的模拟和控制能力) ",
   "main": "./lib/index.js",
+  "bin": {
+    "monix": "./bin/monix.js"
+  },
   "scripts": {
     "test": "make test",
     "build": "./node_modules/.bin/babel src -d lib",
@@ -50,8 +53,9 @@
     "node": ">= 4"
   },
   "dependencies": {
-    "chalk": "^1.1.1",
+    "chalk": "^1.1.3",
     "chance": "^1.0.1",
+    "commander": "^2.9.0",
     "koa": "^2.0.0-alpha.3",
     "lodash": "^4.6.1",
     "moment": "^2.12.0",

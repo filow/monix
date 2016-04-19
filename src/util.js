@@ -1,36 +1,41 @@
 /* eslint-disable no-console */
-import color from 'chalk';
-const levelColor = {
-  debug: color.gray,
-  info: color.cyan,
-  warn: color.yellow,
-  error: color.red.bold,
-};
+
 export {
   isString, isRegExp, isFunction, isArray, isPlainObject, mapValues,
   each, mixin, map, filter, defaultsDeep, merge } from 'lodash';
 
-export function isTest() {
-  return process.env.NODE_ENV === 'test';
-}
+import color from 'chalk';
+const levels = {
+  debug: { i: 0, color: color.gray },
+  info: { i: 1, color: color.cyan },
+  warn: { i: 2, color: color.yellow },
+  error: { i: 3, color: color.red.bold },
+  off: { i: 999, color: color.gray },
+};
+let currentLevel = 'debug';
 let stdout = console;
+
 // 可以手动设置console，以方便测试
 export function setConsole(fakeConsole) {
   stdout = fakeConsole;
 }
-
+export function setLevel(level) {
+  if (!levels[level]) throw new Error('不合法的log level取值');
+  currentLevel = level;
+}
 function getTime() {
   const now = new Date();
   return `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
 }
 function logger(func, level, msg) {
-  if (isTest() && (level === 'debug' || level === 'info')) return msg;
+  if (levels[level].i < levels[currentLevel].i) return msg;
   return stdout[func].apply(stdout,
-    [levelColor.debug(getTime()),
-     levelColor[level](`[${level.toUpperCase()}]`),
+    [levels.debug.color(getTime()),
+     levels[level].color(`[${level.toUpperCase()}]`),
      ...msg]
   );
 }
+
 // 显示内部运行时信息
 export function debug(...msg) {
   logger('log', 'debug', msg);
@@ -45,5 +50,7 @@ export function warn(...msg) {
 }
 // 错误
 export function error(...msg) {
-  throw new Error(levelColor.error(msg));
+  if (levels.error.i >= levels[currentLevel].i) {
+    throw new Error(levels.error.color(msg));
+  }
 }
