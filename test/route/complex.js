@@ -11,11 +11,11 @@ mo.get('/array', res => {
   res.ok(() => [1, 2, 3]);
 });
 
-mo.get('/random', (res, r) => {
+mo.get('/random', (res, req, r) => {
   res.ok(r.randexp(/s{3}/));
 });
 
-mo.get('/nested', (res, r) => {
+mo.get('/nested', (res, req, r) => {
   res.ok({
     id: r.integer({ min: 5, max: 5 }),
     array: [4, 'hello', { a: 1 },

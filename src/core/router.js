@@ -119,7 +119,7 @@ export default class Router {
             res: ctx.Response,
             rnd: random,
             config: Config.scope(`${action.name}`),
-          }, ctx.Response, random);
+          }, ctx.Response, ctx.req, random);
           // 如果用户没有在函数体内部调用res.ok/send方法，就以函数返回值作为结果
           if (!ctx.Response.hasResponse()) {
             ctx.Response.ok(retVal);
