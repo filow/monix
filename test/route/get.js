@@ -18,7 +18,7 @@ mo.get('/number', 123456);
 mo.get('/options', {}, () => commonResponse);
 
 describe('route#get', () => {
-  const server = core.Server.run();
+  const server = core.Server._koa.listen();
   it('(/) => Object', done => {
     request(server).get('/')
     .expect(200, commonResponse, done);

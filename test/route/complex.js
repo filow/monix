@@ -42,7 +42,7 @@ mo.get('/res.send', (res) => {
 
 
 describe('route#complex', () => {
-  const server = core.Server.run();
+  const server = core.Server._koa.listen();
   it('function', done => {
     request(server).get('/function')
     .expect('111', done);

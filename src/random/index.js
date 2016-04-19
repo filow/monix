@@ -8,6 +8,10 @@ const path = require('path');
 
 const registedFunctions = {};
 class Random {
+  static _onload(exports, api) {
+    api.R = new Random();
+    return Random;
+  }
   constructor(options = {}) {
     const { cache = false, seed, cacheStore } = options;
     this.cache = cache;

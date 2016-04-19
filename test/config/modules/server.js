@@ -12,4 +12,8 @@ describe('Server#config', () => {
     mo.set('protocol', 123456);
     assert.equal('http', scope.get('protocol'));
   });
+
+  it('run', () => {
+    assert.ok(mo.core.Server.run());
+  });
 });

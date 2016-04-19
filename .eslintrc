@@ -10,7 +10,8 @@ plugins: [
 globals:
   monix: true
 rules:
-  no-param-reassign: [2, {"props": false}]
+  no-param-reassign: 'off'
   one-var: [2, 'never']
   react/prefer-stateless-function: 'off'
+  no-return-assign: 'off'
   # arrow-body-style: [2, "always"]

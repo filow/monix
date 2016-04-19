@@ -28,7 +28,7 @@ mo.get('/name', {
 });
 
 describe('Config#route#complex', () => {
-  const server = core.Server.run();
+  const server = core.Server._koa.listen();
 
   it('路由设置测试', done => {
     request(server).get('/config')
