@@ -212,4 +212,27 @@ describe('Random#function', () => {
     const d = random.mobile();
     assert(d().match(/^1([358][0-9]|4[57])[0-9]{8}$/));
   });
+
+  it('cnName', () => {
+    let name = random.cnName()();
+    assert(name.length >= 2 && name.length <= 5);
+    name = random.cnName({ surname: false })();
+    assert(name.length >= 1 && name.length <= 3);
+    name = random.cnName({ surname: false, name: false })();
+    assert.equal(name, '');
+    name = random.cnName({ surname: false, name: -1 })();
+    assert.equal(name.length, 1);
+    name = random.cnName({ surname: false, name: 1 })();
+    assert.equal(name.length, 1);
+    name = random.cnName({ surname: false, name: 3 })();
+    assert.equal(name.length, 3);
+    name = random.cnName({ surname: false, name: 4 })();
+    assert.equal(name.length, 3);
+    name = random.cnName({ surname: false, name: '金' })();
+    assert.equal(name.length, 1);
+    name = random.cnName({ surname: false, name: '金木水' })();
+    assert.equal(name.length, 3);
+    name = random.cnName({ surname: false, name: '火土火土' })();
+    assert.equal(name.length, 3);
+  });
 });
