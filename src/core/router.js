@@ -27,6 +27,8 @@ export default class Router {
       name: {
         default: 'global',
       },
+      // 是否跳过HOST和PORT检查
+      skipUrlVerify: process.env.NODE_ENV === 'test',
     });
   }
   _generateRouteName(method, path) {
@@ -101,16 +103,30 @@ export default class Router {
     }
     this._addRouteToStack(name, method, path, handler);
   }
+  _search(ctx) {
+    const parsedUrl = url.parse(ctx.url);
+    const matchResult = ctx.host.match(/([\w\.]+)\:(\d+)/);
+    const reqHost = matchResult[1];
+    const reqPort = Number(matchResult[2] || 80);
+    const action = this.stack.find(
+      (item) => {
+        if (!this.Config.get(item.name, 'skipUrlVerify')) {
+          const host = this.Config.get(item.name, 'host');
+          const port = this.Config.get(item.name, 'port');
+          if (port !== reqPort) return false;
+          if (host !== '0.0.0.0' && host !== reqHost) return false;
+        }
+        return item.regexp.exec(parsedUrl.pathname) && item.method === ctx.method;
+      }
+    );
+    return action;
+  }
   middleware() {
-    const stack = this.stack;
     const Random = this.Random;
     const Config = this.Config;
+    const that = this;
     return async function router(ctx, next) {
-      const parsedUrl = url.parse(ctx.url);
-      const action = stack.find(
-        (item) => item.regexp.exec(parsedUrl.pathname) && item.method === ctx.method
-      );
-
+      const action = that._search(ctx);
       if (action && action.handler) {
         ctx.configScope = action.name;
         const random = new Random();
