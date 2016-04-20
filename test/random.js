@@ -191,4 +191,25 @@ describe('Random#function', () => {
     d = random.datetime({ format: 'milliseconds' });
     assert(d().toString().match(/\d+/));
   });
+
+  it('mac', () => {
+    const d = random.mac();
+    assert(d().match(/^([0-9a-f]{2}\:){5}[0-9a-f]{2}$/));
+    const dPrefix = random.mac({ prefix: '30:40:50' });
+    assert(dPrefix().match(/^30\:40\:50\:([0-9a-f]{2}\:){2}[0-9a-f]{2}$/));
+  });
+
+  it('phone', () => {
+    const d = random.phone();
+    assert(d().match(/^0[0-9]{2,3}\-[2-9][0-9]{6,7}$/));
+    const dNoArea = random.phone({ areacode: false });
+    assert(dNoArea().match(/^[2-9][0-9]{6,7}$/));
+    const dAll = random.phone({ areacode: true, extension: true });
+    assert(dAll().match(/^0[0-9]{2,3}\-[2-9][0-9]{6,7}\-[0-9]{1,4}$/));
+  });
+
+  it('mobile', () => {
+    const d = random.mobile();
+    assert(d().match(/^1([358][0-9]|4[57])[0-9]{8}$/));
+  });
 });
