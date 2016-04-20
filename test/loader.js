@@ -9,9 +9,7 @@ loader.load('TestBase', function baseLoader(exports, api) {
 describe('Loader', () => {
   it('单例类', () => {
     const instance = Loader.instance;
-    const newI = new Loader();
     assert.deepEqual(loader, instance);
-    assert.deepEqual(loader, newI);
   });
   it('不能重复定义模块', () => {
     function errroFn() {

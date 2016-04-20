@@ -1,7 +1,6 @@
 let instance = null;
 export default class Loader {
   constructor() {
-    if (instance) return instance;
     // 以模块名作为命名空间的api，主要用于内部或者插件。
     this.innerApi = {};
     // 会暴露在用户环境的API，如set, get, post等
