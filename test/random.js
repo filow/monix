@@ -235,4 +235,42 @@ describe('Random#function', () => {
     name = random.cnName({ surname: false, name: '火土火土' })();
     assert.equal(name.length, 3);
   });
+
+  it('id', () => {
+    const t = random.id();
+    for (let i = 0; i < 10; i++) {
+      assert.equal(t(), i + 1);
+    }
+  });
+
+  it('mongoid', () => {
+    // 格式检查
+    let t = random.mongoid()();
+    assert(t.match(/^[0-9a-f]{24}$/));
+    // 自定义时间戳
+    const timestamp = Number(new Date(2010, 1, 1));
+    const expectedTimeHex = Math.floor(timestamp / 1000).toString(16);
+    t = random.mongoid({ timestamp })();
+    assert.equal(t.substring(0, 8), expectedTimeHex);
+    // 记录当前的序号
+    const baseOrder = parseInt(t.substring(18, 24), 16);
+    // 检查自定义序号时符号不足是否会补0
+    t = random.mongoid({ machine: 'ff0' })();
+    assert.equal(t.substring(8, 14), '000ff0');
+    // 记录序号
+    const order = parseInt(t.substring(18, 24), 16);
+    // 两个序号应该相差1
+    assert.equal(baseOrder + 1, order);
+    // 检查自定义序号超过数量会不会截断
+    t = random.mongoid({ machine: 'ffaabbcc0' })();
+    assert.equal(t.substring(8, 14), 'ffaabb');
+    // 检查传入数字会不会转换为hex
+    t = random.mongoid({ machine: 255 })();
+    assert.equal(t.substring(8, 14), '0000ff');
+    // 检查pid
+    t = random.mongoid({ pid: 255 })();
+    assert.equal(t.substring(14, 18), '00ff');
+    t = random.mongoid({ pid: 'abcd' })();
+    assert.equal(t.substring(14, 18), 'abcd');
+  });
 });
