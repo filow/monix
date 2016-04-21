@@ -2,7 +2,7 @@
 
 export {
   isString, isRegExp, isFunction, isArray, isPlainObject, mapValues,
-  each, mixin, map, filter, defaultsDeep, merge } from 'lodash';
+  each, mixin, map, filter, defaultsDeep, merge, uniq } from 'lodash';
 
 import color from 'chalk';
 const levels = {

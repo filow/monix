@@ -1,4 +1,4 @@
-TESTS = test/random.js test/util.js test/loader.js test/route test/config
+TESTS = test/random test/util.js test/loader.js test/route test/config
 
 lint:
 	@./node_modules/.bin/eslint src test

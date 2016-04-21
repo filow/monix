@@ -96,6 +96,32 @@ class Random {
   pickset(arr, count) {
     return this.chance.pickset(arr, count);
   }
+  shuffle(arr) {
+    return this.chance.shuffle(arr);
+  }
+  n(item, times) {
+    const result = [];
+    for (let i = 0; i < times; i++) {
+      result.push(item);
+    }
+    return result;
+  }
+  unique(arr) {
+    return u.uniq(u.map(arr, e => typeof e === 'function' ? e() : e)); // eslint-disable-line
+  }
+  uniqueN(item, times) {
+    if (u.isFunction(item)) {
+      const result = [];
+      while (result.length < times) {
+        const val = item();
+        if (!result.find(e => e === val)) {
+          result.push(val);
+        }
+      }
+      return result;
+    }
+    return this.n(item, times);
+  }
   // 添加前置0
   pad(number, width, fillchar = '0') {
     return this.chance.pad(number, width, fillchar);
