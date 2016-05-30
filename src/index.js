@@ -12,7 +12,10 @@ loader.load('Response', require('./core/response'), ['Config', 'Server']);
 // 路由模块
 loader.load('Router', require('./core/router'), ['Config', 'Server', 'Response', 'Random']);
 
+loader.load('CORS', require('./modules/cors'), ['Config', 'Server', 'Response']);
+
 const core = loader.coreApi;
 const api = loader.userApi;
+api.api = api;
 api.core = core;
 module.exports = api;

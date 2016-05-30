@@ -9,7 +9,7 @@ const path = require('path');
 const registedFunctions = {};
 class Random {
   static _onload(exports, api) {
-    api.R = new Random();
+    api.Random = Random;
     return Random;
   }
   constructor(options = {}) {
